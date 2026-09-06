@@ -3005,3 +3005,33 @@ CREAM
   .image-editor-grid{grid-template-columns:1fr}
   .editor-title-row h1{font-size:29px}
 }
+
+
+/* Homepage readability: enlarge secondary/body typography while keeping main display headings unchanged */
+.home-custom .hero-eyebrow{font-size:12px}
+.home-custom .hero-subtitle{font-size:18px}
+.home-custom .hero-text{font-size:15px}
+.home-custom .gold-button,.home-custom .watch-button{font-size:14px}
+
+.home-custom .home-category-strip .category-item h3{font-size:16px}
+.home-custom .home-category-strip .category-item p{font-size:12px}
+
+.home-custom .section-label{font-size:11px}
+.home-custom .section-intro{font-size:13px}
+.home-custom .home-view-all{font-size:13px}
+.home-custom .home-course-info h3{font-size:15px}
+.home-custom .home-course-info p{font-size:11px}
+
+.home-custom .home-benefits h3{font-size:13px}
+.home-custom .home-benefits p{font-size:11px}
+
+.home-custom .story-copy>p:not(.section-label){font-size:13px}
+.home-custom .story-copy .gold-button{font-size:12px}
+.home-custom .story-quote p{font-size:17px}
+.home-custom .story-quote small{font-size:12px}
+
+.home-custom .home-stats span{font-size:11px}
+
+.home-custom .testimonial-grid p{font-size:12px}
+.home-custom .testimonial-grid b{font-size:12px}
+.home-custom .testimonial-grid small{font-size:10px}
