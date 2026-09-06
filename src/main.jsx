@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { createClient } from "@supabase/supabase-js";
 import "./style.css";
 
-
 const sb = createClient(
   import.meta.env.VITE_SUPABASE_URL ||
     "https://placeholder.supabase.co",
@@ -11,9 +10,7 @@ const sb = createClient(
     "placeholder"
 );
 
-
 const tx = {
-
   en: {
     home: "Home",
     about: "About",
@@ -47,13 +44,9 @@ const tx = {
     phone: "ফোন",
     pending: "আপনার নিবন্ধন অনুমোদনের অপেক্ষায় আছে।"
   }
-
 };
 
-
-
 function App() {
-
   const [lang, setLang] = useState("en");
   const [page, setPage] = useState("home");
 
@@ -67,269 +60,164 @@ function App() {
 
   const t = tx[lang];
 
-
   // =========================
   // AUTH SESSION
   // =========================
 
   useEffect(() => {
+    async function getSession() {
+      const {
+        data: { session }
+      } = await sb.auth.getSession();
 
-    sb.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
+      setSession(session);
+    }
 
+    getSession();
 
     const {
       data: { subscription }
-    } = sb.auth.onAuthStateChange(
-      (event, newSession) => {
-
-        setSession(newSession);
-
-      }
-    );
-
+    } = sb.auth.onAuthStateChange((event, newSession) => {
+      setSession(newSession);
+    });
 
     return () => {
       subscription.unsubscribe();
     };
-
   }, []);
-
-
 
   // =========================
   // LOAD CATEGORIES & COURSES
   // =========================
 
   useEffect(() => {
-
     async function loadData() {
+      const [categoriesResult, coursesResult] =
+        await Promise.all([
+          sb
+            .from("categories")
+            .select("*")
+            .order("name"),
 
-      const [
-        categoriesResult,
-        coursesResult
-      ] = await Promise.all([
-
-        sb
-          .from("categories")
-          .select("*")
-          .order("name"),
-
-
-        sb
-          .from("courses")
-          .select("*,categories(name)")
-          .order("name")
-
-      ]);
-
+          sb
+            .from("courses")
+            .select("*, categories(name)")
+            .order("name")
+        ]);
 
       if (categoriesResult.error) {
-
         console.error(
           "Categories error:",
           categoriesResult.error
         );
-
+      } else {
+        setCats(categoriesResult.data || []);
       }
 
-
       if (coursesResult.error) {
-
         console.error(
           "Courses error:",
           coursesResult.error
         );
-
+      } else {
+        setCourses(coursesResult.data || []);
       }
-
-
-      setCats(
-        categoriesResult.data || []
-      );
-
-
-      setCourses(
-        coursesResult.data || []
-      );
-
     }
 
-
     loadData();
-
   }, []);
 
-
-
   // =========================
-  // LOAD USER PROFILE
+  // LOAD PROFILE
   // =========================
 
   useEffect(() => {
-
     if (!session) {
-
       setProfile(null);
-
       return;
-
     }
 
-
     async function loadProfile() {
-
-      console.log(
-        "Loading profile:",
-        session.user.id
-      );
-
-
-      const {
-        data,
-        error
-      } = await sb
+      const { data, error } = await sb
         .from("profiles")
         .select("*")
         .eq("id", session.user.id)
         .single();
 
-
-      console.log(
-        "Profile:",
-        data
-      );
-
-
-      console.log(
-        "Profile error:",
-        error
-      );
-
-
-      if (!error) {
-
-        setProfile(data);
-
+      if (error) {
+        console.error("Profile error:", error);
+        setProfile(null);
+        return;
       }
 
+      console.log("Logged in profile:", data);
+
+      setProfile(data);
     }
 
-
     loadProfile();
-
   }, [session]);
-
-
 
   // =========================
   // LOGOUT
   // =========================
 
   async function signout() {
-
     await sb.auth.signOut();
 
+    setSession(null);
     setProfile(null);
 
     setPage("home");
-
   }
 
-
-
   return (
-
     <>
-
-
       {/* HEADER */}
 
       <header>
-
-
         <button
           className="brand"
           onClick={() => setPage("home")}
         >
-
           <b>সুরছবি</b>
 
           <small>
             SURCHOBI ACADEMY
           </small>
-
         </button>
 
-
-
         <nav>
-
-
-          {[
-            "home",
-            "about",
-            "courses"
-          ].map((x) => (
-
-            <button
-              key={x}
-              onClick={() => setPage(x)}
-            >
-
-              {t[x]}
-
-            </button>
-
-          ))}
-
-
+          {["home", "about", "courses"].map(
+            (x) => (
+              <button
+                key={x}
+                onClick={() => setPage(x)}
+              >
+                {t[x]}
+              </button>
+            )
+          )}
 
           {session ? (
-
             <>
-
-
               <button
-                onClick={() =>
-                  setPage("dash")
-                }
+                onClick={() => setPage("dash")}
               >
-
                 Dashboard
-
               </button>
 
-
-
-              <button
-                onClick={signout}
-              >
-
+              <button onClick={signout}>
                 {t.logout}
-
               </button>
-
-
             </>
-
           ) : (
-
             <>
-
-
               <button
-                onClick={() =>
-                  setPage("login")
-                }
+                onClick={() => setPage("login")}
               >
-
                 {t.login}
-
               </button>
-
-
 
               <button
                 className="gold"
@@ -337,20 +225,11 @@ function App() {
                   setPage("register")
                 }
               >
-
                 {t.register}
-
               </button>
-
-
             </>
-
           )}
-
-
         </nav>
-
-
 
         <button
           className="lang"
@@ -362,58 +241,29 @@ function App() {
             )
           }
         >
-
           {lang === "en"
             ? "বাংলা"
             : "English"}
-
         </button>
-
-
       </header>
 
-
-
-      {/* =====================
-          HOME PAGE
-      ===================== */}
+      {/* HOME */}
 
       {page === "home" && (
-
         <>
-
-
           <section className="hero">
-
-
             <div>
-
-
               <p className="eyebrow">
-
                 CREATIVE ACADEMY · KOLKATA
-
               </p>
 
-
-
-              <h1>
-                সুরছবি
-              </h1>
-
-
+              <h1>সুরছবি</h1>
 
               <h2>
                 SURCHOBI ACADEMY
               </h2>
 
-
-
-              <p>
-                {t.welcome}
-              </p>
-
-
+              <p>{t.welcome}</p>
 
               <button
                 className="gold big"
@@ -421,53 +271,27 @@ function App() {
                   setPage("courses")
                 }
               >
-
                 {t.explore}
-
               </button>
-
-
             </div>
-
-
 
             <div className="art">
-
               ♫
-
               <i>◉</i>
-
               <em>✦</em>
-
             </div>
-
-
           </section>
 
-
-
           <section className="section">
-
-
-            <h2>
-              {t.world}
-            </h2>
-
-
+            <h2>{t.world}</h2>
 
             <div className="cards">
-
-
               {cats.map((c, i) => (
-
                 <article
                   className="card"
                   key={c.id}
                 >
-
-
                   <div className="icon">
-
                     {
                       [
                         "♫",
@@ -478,247 +302,131 @@ function App() {
                         "✦"
                       ][i % 6]
                     }
-
                   </div>
 
-
-
-                  <h3>
-                    {c.name}
-                  </h3>
-
-
+                  <h3>{c.name}</h3>
 
                   <p>
                     {c.description}
                   </p>
-
-
                 </article>
-
               ))}
-
-
             </div>
-
-
           </section>
-
-
         </>
-
       )}
 
-
-
-      {/* =====================
-          ABOUT PAGE
-      ===================== */}
+      {/* ABOUT */}
 
       {page === "about" && (
-
         <section className="page">
-
-
           <h1>
-
             {lang === "en"
               ? "About SURCHOBI"
               : "সুরছবি সম্পর্কে"}
-
           </h1>
-
-
 
           <p>
-
             {lang === "en"
-
               ? "SURCHOBI brings music, dance, photography, drawing and yoga under one creative roof."
-
-              : "সঙ্গীত, নৃত্য, ফটোগ্রাফি, অঙ্কন ও যোগের এক সৃজনশীল ঠিকানা সুরছবি।"
-
-            }
-
+              : "সঙ্গীত, নৃত্য, ফটোগ্রাফি, অঙ্কন ও যোগের এক সৃজনশীল ঠিকানা সুরছবি।"}
           </p>
-
-
         </section>
-
       )}
 
-
-
-      {/* =====================
-          COURSES PAGE
-      ===================== */}
+      {/* COURSES */}
 
       {page === "courses" && (
-
         <section className="page">
-
-
-          <h1>
-            {t.courses}
-          </h1>
-
-
+          <h1>{t.courses}</h1>
 
           <div className="cards">
-
-
             {courses.map((c) => (
-
               <article
                 className="card"
                 key={c.id}
               >
+                <h3>{c.name}</h3>
 
-
-                <h3>
-                  {c.name}
-                </h3>
-
-
-
-                <p>
-                  {c.description}
-                </p>
-
-
+                <p>{c.description}</p>
 
                 <small>
                   {c.categories?.name}
                 </small>
-
-
               </article>
-
             ))}
-
-
           </div>
-
-
         </section>
-
       )}
 
-
-
-      {/* =====================
-          LOGIN
-      ===================== */}
+      {/* LOGIN */}
 
       {page === "login" && (
-
         <Auth
           t={t}
-          login
+          login={true}
+          register={false}
           setPage={setPage}
           setMsg={setMsg}
         />
-
       )}
 
-
-
-      {/* =====================
-          REGISTER
-      ===================== */}
+      {/* REGISTER */}
 
       {page === "register" && (
-
         <Auth
           t={t}
-          register
+          login={false}
+          register={true}
           setPage={setPage}
           setMsg={setMsg}
         />
-
       )}
 
-
-
-      {/* =====================
-          DASHBOARD
-      ===================== */}
+      {/* DASHBOARD */}
 
       {page === "dash" && (
-
         <Dash
           profile={profile}
           t={t}
         />
-
       )}
 
-
-
-      {/* =====================
-          TOAST MESSAGE
-      ===================== */}
+      {/* TOAST */}
 
       {msg && (
-
         <div className="toast">
-
-
           {msg}
 
-
-
           <button
-            onClick={() =>
-              setMsg("")
-            }
+            onClick={() => setMsg("")}
           >
-
             ×
-
           </button>
-
-
         </div>
-
       )}
-
-
 
       {/* FOOTER */}
 
       <footer>
-
         © 2026 SURCHOBI Academy · সুরছবি
-
       </footer>
-
-
     </>
-
   );
-
 }
 
 
-
-
-
-// =========================
+// =====================================
 // AUTH COMPONENT
-// =========================
+// =====================================
 
 function Auth({
-
   t,
   login,
   register,
   setPage,
   setMsg
-
 }) {
-
-
   const [email, setEmail] =
     useState("");
 
@@ -731,447 +439,247 @@ function Auth({
   const [phone, setPhone] =
     useState("");
 
-
-
   async function go(event) {
-
     event.preventDefault();
-
 
     let result;
 
-
-    // LOGIN
-
     if (login) {
-
       result =
         await sb.auth.signInWithPassword({
-
           email,
           password
-
         });
+    } else {
+      result = await sb.auth.signUp({
+        email,
+        password,
 
-    }
-
-
-    // REGISTER
-
-    else {
-
-      result =
-        await sb.auth.signUp({
-
-          email,
-
-          password,
-
-
-          options: {
-
-            data: {
-
-              full_name: name,
-
-              phone: phone
-
-            }
-
+        options: {
+          data: {
+            full_name: name,
+            phone: phone
           }
-
-        });
-
+        }
+      });
     }
-
-
 
     if (result.error) {
+      console.error(result.error);
 
-      console.error(
-        "Authentication error:",
-        result.error
-      );
-
-
-      setMsg(
-        result.error.message
-      );
-
+      setMsg(result.error.message);
 
       return;
-
     }
-
-
 
     if (login) {
-
-      setMsg(
-        "Welcome to SURCHOBI"
-      );
-
+      setMsg("Welcome to SURCHOBI");
 
       setPage("dash");
-
-    }
-
-
-    else {
-
+    } else {
       setMsg(
         "Registration successful. Please check your email to confirm your account."
       );
 
-
       setPage("login");
-
     }
-
   }
 
-
-
   return (
-
     <section className="auth">
-
-
       <form onSubmit={go}>
-
-
         <h1>
-
           {login
             ? t.login
             : t.register}
-
         </h1>
 
-
-
         {register && (
-
           <>
-
-
             <input
-
               placeholder={t.name}
-
               value={name}
-
               onChange={(event) =>
-                setName(
-                  event.target.value
-                )
+                setName(event.target.value)
               }
-
               required
-
             />
-
-
 
             <input
-
               placeholder={t.phone}
-
               value={phone}
-
               onChange={(event) =>
-                setPhone(
-                  event.target.value
-                )
+                setPhone(event.target.value)
               }
-
             />
-
-
           </>
-
         )}
 
-
-
         <input
-
           type="email"
-
           placeholder={t.email}
-
           value={email}
-
           onChange={(event) =>
-            setEmail(
-              event.target.value
-            )
+            setEmail(event.target.value)
           }
-
           required
-
         />
-
-
 
         <input
-
           type="password"
-
           placeholder={t.password}
-
           value={password}
-
           onChange={(event) =>
-            setPassword(
-              event.target.value
-            )
+            setPassword(event.target.value)
           }
-
           required
-
         />
-
-
 
         <button className="gold big">
-
           {login
             ? t.login
             : t.register}
-
         </button>
-
-
       </form>
-
-
     </section>
-
   );
-
 }
 
 
-
-
-
-// =========================
-// DASHBOARD COMPONENT
-// =========================
+// =====================================
+// DASHBOARD
+// =====================================
 
 function Dash({ profile, t }) {
-
-
   const [data, setData] =
     useState(null);
-
 
   const [
     pendingStudents,
     setPendingStudents
   ] = useState([]);
 
-
   const [loading, setLoading] =
     useState(true);
 
+  const [errorMessage, setErrorMessage] =
+    useState("");
 
+  // =====================================
+  // LOAD DASHBOARD
+  // =====================================
 
   useEffect(() => {
-
-
-    if (!profile) {
-
-      return;
-
-    }
-
-
+    if (!profile) return;
 
     async function loadDashboard() {
-
-
       setLoading(true);
 
+      setErrorMessage("");
+
+      console.log(
+        "Dashboard profile:",
+        profile
+      );
 
       // =====================
       // ADMIN
       // =====================
 
       if (profile.role === "admin") {
-
-
         console.log(
-          "ADMIN detected"
+          "ADMIN: Loading pending students"
         );
-
-
-        console.log(
-          "Loading pending students..."
-        );
-
-
 
         const {
-
-          data: studentData,
-
-          error: studentError
-
+          data: students,
+          error: studentsError
         } = await sb
-
           .from("students")
-
           .select("*")
-
-          .eq(
-            "status",
-            "pending"
-          );
-
-
+          .eq("status", "pending");
 
         console.log(
-          "Pending students:",
-          studentData
+          "Pending students result:",
+          students
         );
-
 
         console.log(
-          "Students error:",
-          studentError
+          "Pending students error:",
+          studentsError
         );
 
-
-
-        if (studentError) {
-
-
-          console.error(
-            "STUDENTS TABLE ERROR:",
-            studentError
+        if (studentsError) {
+          setErrorMessage(
+            studentsError.message
           );
-
 
           setLoading(false);
 
-
           return;
-
         }
 
-
-
-        console.log(
-          "Loading profiles..."
-        );
-
-
-
+        // Get profile information
         const {
-
-          data: profileData,
-
-          error: profileError
-
+          data: profiles,
+          error: profilesError
         } = await sb
-
           .from("profiles")
-
           .select("*");
 
-
-
         console.log(
-          "Profiles:",
-          profileData
+          "Profiles result:",
+          profiles
         );
-
 
         console.log(
           "Profiles error:",
-          profileError
+          profilesError
         );
 
-
-
-        if (profileError) {
-
-
-          console.error(
-            "PROFILES TABLE ERROR:",
-            profileError
+        if (profilesError) {
+          setErrorMessage(
+            profilesError.message
           );
-
 
           setLoading(false);
 
-
           return;
-
         }
 
-
-
+        // Combine students + profiles
         const combinedStudents =
-
-          (studentData || []).map(
+          (students || []).map(
             (student) => {
-
-
               const studentProfile =
-
-                (profileData || []).find(
+                (profiles || []).find(
                   (p) =>
                     p.id === student.id
                 );
 
-
-
               return {
-
-
                 ...student,
 
-
                 full_name:
-
                   studentProfile?.full_name ||
-
                   "Unknown Student",
 
-
-
                 phone:
-
                   studentProfile?.phone ||
-
                   ""
-
-
               };
-
             }
-
           );
 
-
-
         console.log(
-          "Combined students:",
+          "FINAL STUDENTS:",
           combinedStudents
         );
-
-
 
         setPendingStudents(
           combinedStudents
         );
-
       }
-
-
 
       // =====================
       // STUDENT
@@ -1180,51 +688,33 @@ function Dash({ profile, t }) {
       else if (
         profile.role === "student"
       ) {
-
-
         const {
-
           data: student,
-
           error
-
         } = await sb
-
           .from("students")
-
           .select("*")
-
-          .eq(
-            "id",
-            profile.id
-          )
-
+          .eq("id", profile.id)
           .single();
 
-
-
         console.log(
-          "Student:",
+          "Student data:",
           student
         );
-
 
         console.log(
           "Student error:",
           error
         );
 
-
-
-        if (!error) {
-
+        if (error) {
+          setErrorMessage(
+            error.message
+          );
+        } else {
           setData(student);
-
         }
-
       }
-
-
 
       // =====================
       // TEACHER
@@ -1233,517 +723,331 @@ function Dash({ profile, t }) {
       else if (
         profile.role === "teacher"
       ) {
-
-
         const {
-
           data: batches,
-
           error
-
         } = await sb
-
           .from("batches")
-
           .select("*")
-
           .eq(
             "teacher_id",
             profile.id
           );
 
-
-
-        console.log(
-          "Teacher batches:",
-          batches
-        );
-
-
-        console.log(
-          "Teacher error:",
-          error
-        );
-
-
-
-        if (!error) {
-
+        if (error) {
+          setErrorMessage(
+            error.message
+          );
+        } else {
           setData(batches);
-
         }
-
       }
 
-
-
       setLoading(false);
-
     }
 
-
-
     loadDashboard();
-
-
   }, [profile]);
 
 
-
-
-
-  // =====================
+  // =====================================
   // APPROVE STUDENT
-  // =====================
+  // =====================================
 
   async function approveStudent(id) {
-
-
-    console.log(
-      "Approving student:",
-      id
-    );
-
-
-
     const { error } = await sb
-
       .from("students")
-
       .update({
-
         status: "active"
-
       })
-
-      .eq(
-        "id",
-        id
-      );
-
-
-
-    console.log(
-      "Approval error:",
-      error
-    );
-
-
+      .eq("id", id);
 
     if (error) {
-
-
-      alert(
-        error.message
+      console.error(
+        "Approval error:",
+        error
       );
 
+      alert(
+        "Error: " + error.message
+      );
 
       return;
-
     }
-
-
 
     setPendingStudents(
       (currentStudents) =>
-
         currentStudents.filter(
           (student) =>
             student.id !== id
         )
-
     );
-
-
 
     alert(
       "Student approved successfully!"
     );
-
   }
 
 
-
-
-
-  // =====================
+  // =====================================
   // PROFILE LOADING
-  // =====================
+  // =====================================
 
   if (!profile) {
-
-
     return (
-
       <section className="page">
-
-        Loading profile...
-
+        <h2>
+          Loading profile...
+        </h2>
       </section>
-
     );
-
   }
 
 
-
-
+  // =====================================
+  // DASHBOARD UI
+  // =====================================
 
   return (
-
     <section className="dash">
 
-
       <aside>
-
-
         <h2>
-
           {profile.full_name}
-
         </h2>
 
-
-
         <p>
-
           {profile.role?.toUpperCase()}
-
         </p>
 
-
-
         <p>
-
           Students · Teachers ·
           Courses · Batches
-
         </p>
-
-
       </aside>
-
 
 
       <article>
 
-
         <h1>
-
           {profile.role === "admin"
-
             ? "Admin Dashboard"
-
-            : "Dashboard"
-
-          }
-
+            : "Dashboard"}
         </h1>
 
 
+        {/* ERROR */}
+
+        {errorMessage && (
+          <div className="notice">
+            <b>Error:</b>{" "}
+            {errorMessage}
+          </div>
+        )}
+
 
         {/* =====================
-            ADMIN DASHBOARD
+            ADMIN
         ===================== */}
 
         {profile.role === "admin" && (
-
           <div>
 
-
             <h2>
-
               Pending Student Approvals
-
             </h2>
 
 
-
             {loading && (
-
               <p>
-
                 Loading students...
-
               </p>
-
             )}
 
 
-
             {!loading &&
+              !errorMessage &&
               pendingStudents.length === 0 && (
-
                 <p>
-
                   🎉 No students are waiting
                   for approval.
-
                 </p>
-
               )}
 
 
-
             {!loading &&
-
               pendingStudents.map(
                 (student) => (
 
                   <div
-
                     className="student-row"
-
                     key={student.id}
-
                   >
-
 
                     <div>
 
-
                       <h3>
-
                         {student.full_name}
-
                       </h3>
 
 
-
                       {student.phone && (
-
                         <p>
-
-                          Phone: {student.phone}
-
+                          Phone:{" "}
+                          {student.phone}
                         </p>
-
                       )}
 
 
-
                       <p>
-
                         Student Code:{" "}
 
-                        {
-
-                          student.student_code ||
-
-                          "Not assigned"
-
-                        }
-
+                        {student.student_code ||
+                          "Not assigned"}
                       </p>
 
 
-
                       <p>
-
                         Status:{" "}
 
                         <b>
-
                           {student.status}
-
                         </b>
-
                       </p>
 
 
-
                       {student.date_of_birth && (
-
                         <p>
-
                           Date of Birth:{" "}
 
                           {student.date_of_birth}
-
                         </p>
-
                       )}
-
 
 
                       {student.address && (
-
                         <p>
-
                           Address:{" "}
 
                           {student.address}
-
                         </p>
-
                       )}
-
 
                     </div>
 
 
-
                     <button
-
                       className="gold"
-
                       onClick={() =>
                         approveStudent(
                           student.id
                         )
                       }
-
                     >
-
                       ✓ Approve
-
                     </button>
 
-
                   </div>
-
                 )
-
               )}
 
-
           </div>
-
         )}
 
 
-
         {/* =====================
-            STUDENT DASHBOARD
+            STUDENT
         ===================== */}
 
         {profile.role === "student" && (
-
           <div>
 
-
             <h2>
-
-              Welcome,
-              {" "}
+              Welcome,{" "}
               {profile.full_name}
-
             </h2>
-
 
 
             {loading && (
-
               <p>
-
                 Loading...
-
               </p>
-
             )}
 
 
-
             {!loading &&
-
               data?.status === "pending" && (
-
                 <div className="notice">
-
                   {t.pending}
-
                 </div>
-
               )}
 
 
-
             {!loading &&
-
               data?.status === "active" && (
-
                 <div className="notice">
-
                   🎉 Your account has been
                   approved!
-
                 </div>
-
               )}
 
 
-
-            {!loading && !data && (
-
-              <p>
-
-                Your student record is being
-                prepared.
-
-              </p>
-
-            )}
-
+            {!loading &&
+              !data &&
+              !errorMessage && (
+                <p>
+                  Your student record is
+                  being prepared.
+                </p>
+              )}
 
           </div>
-
         )}
-
 
 
         {/* =====================
-            TEACHER DASHBOARD
+            TEACHER
         ===================== */}
 
         {profile.role === "teacher" && (
-
           <div>
 
-
             <h2>
-
               Teacher Dashboard
-
             </h2>
 
 
-
-            {!loading && (
-
-              <pre>
-
-                {JSON.stringify(
-                  data,
-                  null,
-                  2
-                )}
-
-              </pre>
-
+            {loading && (
+              <p>
+                Loading...
+              </p>
             )}
 
 
-          </div>
+            {!loading &&
+              data &&
+              (
+                <pre>
+                  {JSON.stringify(
+                    data,
+                    null,
+                    2
+                  )}
+                </pre>
+              )}
 
+          </div>
         )}
 
-
       </article>
-
-
     </section>
-
   );
-
 }
 
 
-
-
-
-// =========================
-// RENDER APP
-// =========================
+// =====================================
+// RENDER
+// =====================================
 
 createRoot(
   document.getElementById("root")
