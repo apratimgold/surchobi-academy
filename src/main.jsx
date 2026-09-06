@@ -3,6 +3,25 @@ import { createRoot } from "react-dom/client";
 import { createClient } from "@supabase/supabase-js";
 import "./style.css";
 
+const translations = {
+  en: {
+    home:"Home", about:"About", courses:"Courses", faculty:"Faculty",
+    login:"Login / Sign Up", logout:"Logout",
+    heroLabel:"LEARN • CREATE • EXPRESS",
+    heroTitle:"Art Builds a Kinder, Brighter World",
+    heroText:"Music, Dance, Photography, Visual Art and more.",
+    explore:"Explore Courses", story:"Our Story"
+  },
+  bn: {
+    home:"হোম", about:"আমাদের সম্পর্কে", courses:"কোর্সসমূহ", faculty:"শিক্ষকবৃন্দ",
+    login:"লগইন / নিবন্ধন", logout:"লগআউট",
+    heroLabel:"শিখুন • সৃষ্টি করুন • প্রকাশ করুন",
+    heroTitle:"শিল্প গড়ে তোলে আরও সুন্দর, উজ্জ্বল পৃথিবী",
+    heroText:"সংগীত, নৃত্য, ফটোগ্রাফি, চিত্রকলা এবং আরও অনেক কিছু।",
+    explore:"কোর্স দেখুন", story:"আমাদের কথা"
+  }
+};
+
 const sb = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
@@ -45,6 +64,7 @@ function getSiteSettings() {
 function App() {
   const [page, setPage] = useState("home");
   const [lang, setLang] = useState("en");
+  const t = translations[lang];
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [cats, setCats] = useState([]);
@@ -102,10 +122,10 @@ function App() {
         <span><b>সুরছবি</b><small>SURCHOBI ACADEMY</small></span>
       </button>
       <nav className="main-nav">
-        <button onClick={() => setPage("home")}>Home</button>
-        <button onClick={() => setPage("about")}>About</button>
-        <button onClick={() => setPage("courses")}>Courses</button>
-        <button onClick={() => setPage("faculty")}>Faculty</button>
+        <button onClick={() => setPage("home")}>{t.home}</button>
+        <button onClick={() => setPage("about")}>{t.about}</button>
+        <button onClick={() => setPage("courses")}>{t.courses}</button>
+        <button onClick={() => setPage("faculty")}>{t.faculty}</button>
         {session && <button onClick={() => setPage("dash")}>Dashboard</button>}
       </nav>
       <div className="header-actions">
@@ -113,8 +133,8 @@ function App() {
           {lang === "en" ? "বাংলা" : "English"}
         </button>
         {session
-          ? <button className="login-button" onClick={logout}>{lang === "en" ? "Logout" : "লগআউট"}</button>
-          : <button className="login-button" onClick={() => setPage("login")}>{lang === "en" ? "Login / Sign Up" : "লগইন / নিবন্ধন"}</button>}
+          ? <button className="login-button" onClick={logout}>{t.logout}</button>
+          : <button className="login-button" onClick={() => setPage("login")}>{t.login}</button>}
       </div>
     </header>
 
@@ -210,7 +230,7 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
 
     {settings.showStats && <section className="home-stats">
       <div><b>500+</b><span>Happy Students</span></div>
-      <div><b>25+</b><span>Courses</span></div>
+      <div><b>25+</b><span>{t.courses}</span></div>
       <div><b>30+</b><span>Expert Faculty</span></div>
       <i>Create<br/>Belong<br/>Grow</i>
     </section>}
@@ -441,7 +461,7 @@ function WebsiteEditor({ settings, onSave, setMsg }) {
       </div>
 
       <div className="editor-panel">
-        <h2>Our Story</h2>
+        <h2>{t.story}</h2>
         <Field label="Story heading (new line allowed)" field="storyTitle" rows={3}/>
         <Field label="Story text" field="storyText" rows={7}/>
       </div>
