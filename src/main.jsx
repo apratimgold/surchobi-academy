@@ -138,15 +138,15 @@ function App() {
       </div>
     </header>
 
-    {page === "home" && <Home cats={cats} courses={courses} setPage={setPage} settings={siteSettings} />}
-    {page === "about" && <Simple title="Nurturing Creativity For A Brighter Tomorrow" text="SURCHOBI is a creative arts academy where passion meets discipline." />}
-    {page === "courses" && <CoursesPage courses={courses} />}
-    {page === "faculty" && <Faculty />}
-    {page === "login" && <Auth mode="login" setPage={setPage} setMsg={setMsg} />}
-    {page === "register" && <Auth mode="register" setPage={setPage} setMsg={setMsg} />}
-    {page === "forgot" && <Forgot setPage={setPage} setMsg={setMsg} />}
-    {page === "reset" && <Reset setPage={setPage} setMsg={setMsg} />}
-    {page === "dash" && <Dashboard profile={profile} logout={logout} setMsg={setMsg} siteSettings={siteSettings} saveSiteSettings={saveSiteSettings} />}
+    {page === "home" ? <Home cats={cats} courses={courses} setPage={setPage} settings={siteSettings} /> : null}
+    {page === "about" ? <Simple title={lang === "en" ? "Nurturing Creativity For A Brighter Tomorrow" : "সৃজনশীলতাকে লালন করি, উজ্জ্বল আগামীর জন্য"} text={lang === "en" ? "SURCHOBI is a creative arts academy where passion meets discipline." : "সুরছবি একটি সৃজনশীল শিল্পকলা একাডেমি, যেখানে আগ্রহ ও শৃঙ্খলার মিলন ঘটে।"} /> : null}
+    {page === "courses" ? <CoursesPage courses={courses} /> : null}
+    {page === "faculty" ? <Faculty /> : null}
+    {page === "login" ? <Auth mode="login" setPage={setPage} setMsg={setMsg} /> : null}
+    {page === "register" ? <Auth mode="register" setPage={setPage} setMsg={setMsg} /> : null}
+    {page === "forgot" ? <Forgot setPage={setPage} setMsg={setMsg} /> : null}
+    {page === "reset" ? <Reset setPage={setPage} setMsg={setMsg} /> : null}
+    {page === "dash" ? <Dashboard profile={profile} logout={logout} setMsg={setMsg} siteSettings={siteSettings} saveSiteSettings={saveSiteSettings} /> : null}
 
     {msg && <div className="toast"><span>{msg}</span><button onClick={() => setMsg("")}>×</button></div>}
     {page !== "dash" && <Footer />}
