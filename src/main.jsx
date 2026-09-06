@@ -89,42 +89,100 @@ function App() {
 }
 
 function Home({ cats, courses, setPage }) {
-  const wanted = ["Music", "Dance", "Drawing", "Photography", "Yoga", "Others"];
+  const wanted = ["Music", "Dance", "Photography", "Drawing", "Others"];
   const sorted = [...cats].sort((a,b) => (wanted.indexOf(a.name) < 0 ? 99 : wanted.indexOf(a.name)) - (wanted.indexOf(b.name) < 0 ? 99 : wanted.indexOf(b.name)));
+  const shownCourses = courses.slice(0, 6);
+
   return <>
-    <section className="hero-modern">
-      <div className="hero-content">
-        <p className="hero-label">LEARN • CREATE • EXPRESS</p>
-        <h1>Art Builds<br />a Kinder,<br />Brighter World</h1>
-        <h2>Music. Dance. Photography. Visual Art. And More.</h2>
-        <p className="hero-description">At Surchobi, we nurture creativity, discipline and self-expression through the arts.</p>
-        <div className="hero-buttons">
-          <button className="gold-button" onClick={() => setPage("courses")}>Explore Courses →</button>
-          <button className="outline-button" onClick={() => setPage("about")}>About Us</button>
+    <section className="home-hero">
+      <div className="hero-copy">
+        <p className="hero-eyebrow">LEARN • CREATE • EXPRESS</p>
+        <h1>Art Builds<br/>a Kinder,<br/>Brighter World</h1>
+        <p className="hero-subtitle">Music. Dance. Photography. Visual Art. And More.</p>
+        <p className="hero-text">At Surchobi, we nurture creativity, discipline and self-expression through the arts. Discover your passion, learn from expert mentors, and be part of a vibrant community.</p>
+        <div className="hero-cta">
+          <button className="gold-button" onClick={() => setPage("courses")}>Explore Courses <span>→</span></button>
+          <button className="watch-button" onClick={() => setPage("about")}><span className="play-dot">▷</span> Watch Our Story</button>
         </div>
       </div>
-      <div className="hero-art"><div className="art-panel panel-1">MUSIC</div><div className="art-panel panel-2">DANCE</div><div className="art-panel panel-3">PHOTO</div><div className="art-panel panel-4">ART</div></div>
+      <div className="hero-collage" aria-label="Creative arts at Surchobi">
+        <div className="hero-tile hero-tile-music"><span>Music</span></div>
+        <div className="hero-tile hero-tile-dance"><span>Dance</span></div>
+        <div className="hero-tile hero-tile-photo"><span>Photography</span></div>
+        <div className="hero-tile hero-tile-art"><span>Visual Art</span></div>
+      </div>
     </section>
 
-    <section className="category-strip">
+    <section className="category-strip home-category-strip">
       {sorted.map((c) => (
         <div className="category-item" key={c.id}>
-          <div className="category-icon">
-            <CategoryIcon name={c.name} />
-          </div>
+          <div className="category-icon"><CategoryIcon name={c.name} /></div>
           <h3>{c.name}</h3>
           <p>{c.description || "Explore creativity"}</p>
         </div>
       ))}
+      <div className="category-item">
+        <div className="category-icon"><CategoryIcon name="Others" /></div>
+        <h3>All Age Groups</h3>
+        <p>Kids • Teens • Adults</p>
+      </div>
     </section>
 
-    <section className="courses-section">
-      <div className="section-heading"><div><p className="section-label">EXPLORE</p><h2>Our Courses</h2></div><button className="text-button" onClick={() => setPage("courses")}>View All Courses →</button></div>
-      <div className="course-grid">
-        {courses.slice(0,6).map(c => <article className="course-card" key={c.id}>
+    <section className="home-courses">
+      <div className="home-section-head">
+        <div>
+          <p className="section-label">EXPLORE</p>
+          <h2>Our Courses</h2>
+        </div>
+        <p className="section-intro">From music to movement, lenses to colors, explore a wide range of creative courses designed for all age groups and skill levels.</p>
+        <button className="text-button home-view-all" onClick={() => setPage("courses")}>View All Courses <span>→</span></button>
+      </div>
+      <div className="home-course-row">
+        {shownCourses.map(c => <article className="home-course-card" key={c.id}>
           <CourseImage course={c} />
-          <div className="course-info"><h3>{c.name}</h3><p>{c.description || "Discover your creativity"}</p></div>
+          <div className="home-course-info">
+            <h3>{c.name}</h3>
+            <p>{c.description || "Explore your creativity"}</p>
+            <button onClick={() => setPage("courses")} aria-label={"Explore " + c.name}>→</button>
+          </div>
         </article>)}
+      </div>
+    </section>
+
+    <section className="home-benefits">
+      <div><span>🎓</span><h3>Expert Mentors</h3><p>Learn from experienced professionals</p></div>
+      <div><span>👥</span><h3>Creative Community</h3><p>Be part of a vibrant artistic family</p></div>
+      <div><span>★</span><h3>Events & Showcase</h3><p>Regular events, exhibitions & recitals</p></div>
+      <div><span>▥</span><h3>Personal Growth</h3><p>Build confidence, discipline and life skills</p></div>
+      <b className="benefit-script">More<br/>Than a School</b>
+    </section>
+
+    <section className="home-story">
+      <div className="story-copy">
+        <p className="section-label">OUR STORY</p>
+        <h2>Nurturing Creativity<br/>For a Brighter Tomorrow</h2>
+        <p>Surchobi is a creative arts academy built on the belief that the arts make life richer, kinder and more meaningful. We provide a supportive space for learners of all ages to explore, grow and express themselves through music, movement and more.</p>
+        <button className="gold-button" onClick={() => setPage("about")}>Know More About Us <span>→</span></button>
+      </div>
+      <div className="story-image" />
+      <div className="story-quote"><span>“</span><p>Creativity is<br/>not a talent.<br/>It is a way of life.</p><small>— Surchobi</small></div>
+    </section>
+
+    <section className="home-stats">
+      <div><b>500+</b><span>Happy Students</span></div>
+      <div><b>25+</b><span>Courses</span></div>
+      <div><b>30+</b><span>Expert Faculty</span></div>
+      <div><b>100+</b><span>Events & Performances</span></div>
+      <div><b>95%</b><span>Student Satisfaction</span></div>
+      <i>Create<br/>Belong<br/>Grow</i>
+    </section>
+
+    <section className="home-testimonials">
+      <div className="testimonial-heading"><p className="section-label">WHAT OUR STUDENTS SAY</p><h2>Voices from Our Community</h2></div>
+      <div className="testimonial-grid">
+        <article><div className="testimonial-avatar">R</div><p>“Surchobi has given me more than just music lessons. It has given me confidence and a family.”</p><b>Riya Sharma</b><small>Guitar Student</small></article>
+        <article><div className="testimonial-avatar">A</div><p>“The photography classes here opened my eyes to a whole new world. Amazing mentors and great support!”</p><b>Arjun Das</b><small>Photography Student</small></article>
+        <article><div className="testimonial-avatar">M</div><p>“Dance at Surchobi is not just about steps, it's about expression. I love being a part of this place!”</p><b>Megha Roy</b><small>Dance Student</small></article>
       </div>
     </section>
   </>;
