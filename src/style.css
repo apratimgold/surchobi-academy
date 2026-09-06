@@ -3035,3 +3035,13 @@ CREAM
 .home-custom .testimonial-grid p{font-size:12px}
 .home-custom .testimonial-grid b{font-size:12px}
 .home-custom .testimonial-grid small{font-size:10px}
+
+
+/* Header navigation readability */
+.main-header .main-nav button{font-size:14px;letter-spacing:.1px}
+.main-header .language-button{font-size:13px;padding:9px 14px}
+.main-header .login-button{font-size:13px;padding:10px 18px}
+@media(max-width:600px){
+  .main-header .language-button{font-size:11px;padding:8px 10px}
+  .main-header .login-button{font-size:11px;padding:9px 11px}
+}
