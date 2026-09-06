@@ -162,11 +162,6 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
           <p>{c.description || "Explore creativity"}</p>
         </div>
       ))}
-      <div className="category-item">
-        <div className="category-icon"><CategoryIcon name="Others" /></div>
-        <h3>All Age Groups</h3>
-        <p>Kids • Teens • Adults</p>
-      </div>
     </section>
 
     <section className="home-courses">
@@ -213,8 +208,6 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
       <div><b>500+</b><span>Happy Students</span></div>
       <div><b>25+</b><span>Courses</span></div>
       <div><b>30+</b><span>Expert Faculty</span></div>
-      <div><b>100+</b><span>Events & Performances</span></div>
-      <div><b>95%</b><span>Student Satisfaction</span></div>
       <i>Create<br/>Belong<br/>Grow</i>
     </section>}
 
