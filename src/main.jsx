@@ -8,6 +8,40 @@ const sb = createClient(
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 );
 
+
+const DEFAULT_SITE_SETTINGS = {
+  heroEyebrow: "LEARN • CREATE • EXPRESS",
+  heroTitle: "Art Builds\na Kinder,\nBrighter World",
+  heroSubtitle: "Music. Dance. Photography. Visual Art. And More.",
+  heroText: "At Surchobi, we nurture creativity, discipline and self-expression through the arts. Discover your passion, learn from expert mentors, and be part of a vibrant community.",
+  exploreText: "Explore Courses",
+  storyTitle: "Nurturing Creativity\nFor a Brighter Tomorrow",
+  storyText: "Surchobi is a creative arts academy built on the belief that the arts make life richer, kinder and more meaningful. We provide a supportive space for learners of all ages to explore, grow and express themselves through music, movement and more.",
+  storyImage: "",
+  fontFamily: "Playfair Display",
+  bodyFont: "DM Sans",
+  primaryColor: "#062f2f",
+  accentColor: "#e3c27d",
+  pageBackground: "#f4f1e9",
+  heroMusicImage: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=900&q=85",
+  heroDanceImage: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=900&q=85",
+  heroPhotoImage: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=85",
+  heroArtImage: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=85",
+  showBenefits: true,
+  showStory: true,
+  showStats: true,
+  showTestimonials: true
+};
+
+function getSiteSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("surchobi_site_settings") || "{}");
+    return { ...DEFAULT_SITE_SETTINGS, ...saved };
+  } catch {
+    return DEFAULT_SITE_SETTINGS;
+  }
+}
+
 function App() {
   const [page, setPage] = useState("home");
   const [session, setSession] = useState(null);
@@ -15,6 +49,13 @@ function App() {
   const [cats, setCats] = useState([]);
   const [courses, setCourses] = useState([]);
   const [msg, setMsg] = useState("");
+  const [siteSettings, setSiteSettings] = useState(() => getSiteSettings());
+
+  function saveSiteSettings(next) {
+    const merged = { ...siteSettings, ...next };
+    setSiteSettings(merged);
+    localStorage.setItem("surchobi_site_settings", JSON.stringify(merged));
+  }
 
   useEffect(() => {
     sb.auth.getSession().then(({ data }) => setSession(data.session));
@@ -73,7 +114,7 @@ function App() {
       </div>
     </header>
 
-    {page === "home" && <Home cats={cats} courses={courses} setPage={setPage} />}
+    {page === "home" && <Home cats={cats} courses={courses} setPage={setPage} settings={siteSettings} />}
     {page === "about" && <Simple title="Nurturing Creativity For A Brighter Tomorrow" text="SURCHOBI is a creative arts academy where passion meets discipline." />}
     {page === "courses" && <CoursesPage courses={courses} />}
     {page === "faculty" && <Faculty />}
@@ -81,14 +122,14 @@ function App() {
     {page === "register" && <Auth mode="register" setPage={setPage} setMsg={setMsg} />}
     {page === "forgot" && <Forgot setPage={setPage} setMsg={setMsg} />}
     {page === "reset" && <Reset setPage={setPage} setMsg={setMsg} />}
-    {page === "dash" && <Dashboard profile={profile} logout={logout} setMsg={setMsg} />}
+    {page === "dash" && <Dashboard profile={profile} logout={logout} setMsg={setMsg} siteSettings={siteSettings} saveSiteSettings={saveSiteSettings} />}
 
     {msg && <div className="toast"><span>{msg}</span><button onClick={() => setMsg("")}>×</button></div>}
     {page !== "dash" && <Footer />}
   </>;
 }
 
-function Home({ cats, courses, setPage }) {
+function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
   const wanted = ["Music", "Dance", "Photography", "Drawing", "Others"];
   const sorted = [...cats].sort((a,b) => (wanted.indexOf(a.name) < 0 ? 99 : wanted.indexOf(a.name)) - (wanted.indexOf(b.name) < 0 ? 99 : wanted.indexOf(b.name)));
   const shownCourses = courses.slice(0, 6);
@@ -96,20 +137,20 @@ function Home({ cats, courses, setPage }) {
   return <>
     <section className="home-hero">
       <div className="hero-copy">
-        <p className="hero-eyebrow">LEARN • CREATE • EXPRESS</p>
-        <h1>Art Builds<br/>a Kinder,<br/>Brighter World</h1>
-        <p className="hero-subtitle">Music. Dance. Photography. Visual Art. And More.</p>
-        <p className="hero-text">At Surchobi, we nurture creativity, discipline and self-expression through the arts. Discover your passion, learn from expert mentors, and be part of a vibrant community.</p>
+        <p className="hero-eyebrow">{settings.heroEyebrow}</p>
+        <h1>{settings.heroTitle.split("\n").map((line,i)=><React.Fragment key={i}>{line}{i < settings.heroTitle.split("\n").length-1 && <br/>}</React.Fragment>)}</h1>
+        <p className="hero-subtitle">{settings.heroSubtitle}</p>
+        <p className="hero-text">{settings.heroText}</p>
         <div className="hero-cta">
-          <button className="gold-button" onClick={() => setPage("courses")}>Explore Courses <span>→</span></button>
+          <button className="gold-button" onClick={() => setPage("courses")}>{settings.exploreText} <span>→</span></button>
           <button className="watch-button" onClick={() => setPage("about")}><span className="play-dot">▷</span> Watch Our Story</button>
         </div>
       </div>
       <div className="hero-collage" aria-label="Creative arts at Surchobi">
-        <div className="hero-tile hero-tile-music"><span>Music</span></div>
-        <div className="hero-tile hero-tile-dance"><span>Dance</span></div>
-        <div className="hero-tile hero-tile-photo"><span>Photography</span></div>
-        <div className="hero-tile hero-tile-art"><span>Visual Art</span></div>
+        <div className="hero-tile hero-tile-music" style={{backgroundImage:`url("${settings.heroMusicImage}")`}}><span>Music</span></div>
+        <div className="hero-tile hero-tile-dance" style={{backgroundImage:`url("${settings.heroDanceImage}")`}}><span>Dance</span></div>
+        <div className="hero-tile hero-tile-photo" style={{backgroundImage:`url("${settings.heroPhotoImage}")`}}><span>Photography</span></div>
+        <div className="hero-tile hero-tile-art" style={{backgroundImage:`url("${settings.heroArtImage}")`}}><span>Visual Art</span></div>
       </div>
     </section>
 
@@ -149,42 +190,42 @@ function Home({ cats, courses, setPage }) {
       </div>
     </section>
 
-    <section className="home-benefits">
+    {settings.showBenefits && <section className="home-benefits">
       <div><span>🎓</span><h3>Expert Mentors</h3><p>Learn from experienced professionals</p></div>
       <div><span>👥</span><h3>Creative Community</h3><p>Be part of a vibrant artistic family</p></div>
       <div><span>★</span><h3>Events & Showcase</h3><p>Regular events, exhibitions & recitals</p></div>
       <div><span>▥</span><h3>Personal Growth</h3><p>Build confidence, discipline and life skills</p></div>
       <b className="benefit-script">More<br/>Than a School</b>
-    </section>
+    </section>}
 
-    <section className="home-story">
+    {settings.showStory && <section className="home-story">
       <div className="story-copy">
         <p className="section-label">OUR STORY</p>
-        <h2>Nurturing Creativity<br/>For a Brighter Tomorrow</h2>
-        <p>Surchobi is a creative arts academy built on the belief that the arts make life richer, kinder and more meaningful. We provide a supportive space for learners of all ages to explore, grow and express themselves through music, movement and more.</p>
+        <h2>{settings.storyTitle.split("\n").map((line,i)=><React.Fragment key={i}>{line}{i < settings.storyTitle.split("\n").length-1 && <br/>}</React.Fragment>)}</h2>
+        <p>{settings.storyText}</p>
         <button className="gold-button" onClick={() => setPage("about")}>Know More About Us <span>→</span></button>
       </div>
-      <div className="story-image" />
+      <div className="story-image" style={settings.storyImage ? {backgroundImage:`url("${settings.storyImage}")`} : undefined} />
       <div className="story-quote"><span>“</span><p>Creativity is<br/>not a talent.<br/>It is a way of life.</p><small>— Surchobi</small></div>
-    </section>
+    </section>}
 
-    <section className="home-stats">
+    {settings.showStats && <section className="home-stats">
       <div><b>500+</b><span>Happy Students</span></div>
       <div><b>25+</b><span>Courses</span></div>
       <div><b>30+</b><span>Expert Faculty</span></div>
       <div><b>100+</b><span>Events & Performances</span></div>
       <div><b>95%</b><span>Student Satisfaction</span></div>
       <i>Create<br/>Belong<br/>Grow</i>
-    </section>
+    </section>}
 
-    <section className="home-testimonials">
+    {settings.showTestimonials && <section className="home-testimonials">
       <div className="testimonial-heading"><p className="section-label">WHAT OUR STUDENTS SAY</p><h2>Voices from Our Community</h2></div>
       <div className="testimonial-grid">
         <article><div className="testimonial-avatar">R</div><p>“Surchobi has given me more than just music lessons. It has given me confidence and a family.”</p><b>Riya Sharma</b><small>Guitar Student</small></article>
         <article><div className="testimonial-avatar">A</div><p>“The photography classes here opened my eyes to a whole new world. Amazing mentors and great support!”</p><b>Arjun Das</b><small>Photography Student</small></article>
         <article><div className="testimonial-avatar">M</div><p>“Dance at Surchobi is not just about steps, it's about expression. I love being a part of this place!”</p><b>Megha Roy</b><small>Dance Student</small></article>
       </div>
-    </section>
+    </section>}
   </>;
 }
 
@@ -305,11 +346,11 @@ function Reset({setPage,setMsg}){
   return <section className="auth-page"><div className="auth-panel"><form className="auth-form" onSubmit={submit}><h1>Create New Password</h1><input type="password" placeholder="New password" value={a} onChange={e=>setA(e.target.value)} required/><input type="password" placeholder="Confirm password" value={b} onChange={e=>setB(e.target.value)} required/><button className="gold-button">Update Password</button></form></div></section>;
 }
 
-function Dashboard({profile,logout,setMsg}){
+function Dashboard({profile,logout,setMsg,siteSettings,saveSiteSettings}){
   const [view,setView]=useState("dashboard");
   if(!profile)return <div className="loading-page">Loading dashboard...</div>;
   if(profile.role==="student")return <StudentDash profile={profile} logout={logout}/>;
-  const menu=[["dashboard","⌂","Dashboard"],["students","♙","Students"],["teachers","♧","Teachers"],["courses","▤","Courses"],["batches","◫","Batches"],["attendance","▦","Attendance"],["fees","▣","Fees & Payments"],["notices","♢","Notices"],["events","▧","Events"]];
+  const menu=[["dashboard","⌂","Dashboard"],["students","♙","Students"],["teachers","♧","Teachers"],["courses","▤","Courses"],["batches","◫","Batches"],["attendance","▦","Attendance"],["fees","▣","Fees & Payments"],["notices","♢","Notices"],["events","▧","Events"],["website","✦","Website Editor"]];
   return <div className="dashboard-layout">
     <aside className="dashboard-sidebar"><div className="dashboard-logo"><span>♫</span><div><b>সুরছবি</b><small>CREATIVE ARTS</small></div></div>
       <div className="sidebar-menu">{menu.map(x=><button key={x[0]} className={view===x[0]?"active":""} onClick={()=>setView(x[0])}><span>{x[1]}</span>{x[2]}</button>)}</div>
@@ -326,8 +367,104 @@ function Dashboard({profile,logout,setMsg}){
       {view==="fees"&&<Fees setMsg={setMsg}/>}
       {view==="notices"&&<Notices profile={profile} setMsg={setMsg}/>}
       {view==="events"&&<section className="manager-page"><h1>Events</h1><p>Your database currently has no events table. Create one before events can be saved.</p></section>}
+      {view==="website"&&<WebsiteEditor settings={siteSettings} onSave={saveSiteSettings} setMsg={setMsg}/>} 
     </main>
   </div>;
+}
+
+
+function WebsiteEditor({ settings, onSave, setMsg }) {
+  const [draft, setDraft] = useState(settings || DEFAULT_SITE_SETTINGS);
+  useEffect(() => setDraft(settings || DEFAULT_SITE_SETTINGS), [settings]);
+
+  const update = (key, value) => setDraft(d => ({ ...d, [key]: value }));
+  const save = () => {
+    onSave(draft);
+    setMsg("Website design saved successfully.");
+  };
+  const reset = () => {
+    if (!window.confirm("Reset all website editor settings to the original design?")) return;
+    setDraft(DEFAULT_SITE_SETTINGS);
+    onSave(DEFAULT_SITE_SETTINGS);
+    localStorage.removeItem("surchobi_site_settings");
+    setMsg("Website settings reset.");
+  };
+
+  const Field = ({label, field, type="text", rows}) => (
+    <label className="editor-field"><span>{label}</span>
+      {rows ? <textarea rows={rows} value={draft[field] || ""} onChange={e=>update(field,e.target.value)} /> :
+      <input type={type} value={draft[field] || ""} onChange={e=>update(field,e.target.value)} />}
+    </label>
+  );
+
+  return <section className="manager-page website-editor">
+    <div className="editor-title-row">
+      <div><p className="section-label">NO CODE • LIVE PREVIEW</p><h1>Website Editor</h1><p>Change your homepage text, fonts, colours and images from here.</p></div>
+      <div className="editor-actions"><button className="secondary-editor-button" onClick={reset}>Reset</button><button className="gold-button" onClick={save}>Save Changes</button></div>
+    </div>
+
+    <div className="editor-tabs">
+      <div className="editor-panel">
+        <h2>Hero Section</h2>
+        <Field label="Small heading" field="heroEyebrow"/>
+        <Field label="Main heading (new line allowed)" field="heroTitle" rows={4}/>
+        <Field label="Subtitle" field="heroSubtitle"/>
+        <Field label="Description" field="heroText" rows={5}/>
+        <Field label="Button text" field="exploreText"/>
+      </div>
+
+      <div className="editor-panel">
+        <h2>Fonts & Colours</h2>
+        <label className="editor-field"><span>Heading Font</span>
+          <select value={draft.fontFamily} onChange={e=>update("fontFamily",e.target.value)}>
+            <option>Playfair Display</option><option>Lora</option><option>Georgia</option><option>DM Sans</option>
+          </select>
+        </label>
+        <label className="editor-field"><span>Body Font</span>
+          <select value={draft.bodyFont} onChange={e=>update("bodyFont",e.target.value)}>
+            <option>DM Sans</option><option>Arial</option><option>Georgia</option>
+          </select>
+        </label>
+        <label className="editor-color"><span>Primary colour</span><input type="color" value={draft.primaryColor} onChange={e=>update("primaryColor",e.target.value)}/><code>{draft.primaryColor}</code></label>
+        <label className="editor-color"><span>Accent colour</span><input type="color" value={draft.accentColor} onChange={e=>update("accentColor",e.target.value)}/><code>{draft.accentColor}</code></label>
+        <label className="editor-color"><span>Page background</span><input type="color" value={draft.pageBackground} onChange={e=>update("pageBackground",e.target.value)}/><code>{draft.pageBackground}</code></label>
+      </div>
+
+      <div className="editor-panel editor-wide">
+        <h2>Images</h2>
+        <p className="editor-help">Paste an image URL. The preview updates immediately.</p>
+        <div className="image-editor-grid">
+          {[["Hero Music","heroMusicImage"],["Hero Dance","heroDanceImage"],["Hero Photography","heroPhotoImage"],["Hero Visual Art","heroArtImage"],["Our Story","storyImage"]].map(([label,field])=>
+            <div className="image-editor-card" key={field}>
+              <div className="editor-image-preview" style={{backgroundImage:`url("${draft[field]}")`}} />
+              <label><span>{label}</span><input value={draft[field] || ""} placeholder="https://..." onChange={e=>update(field,e.target.value)}/></label>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="editor-panel">
+        <h2>Our Story</h2>
+        <Field label="Story heading (new line allowed)" field="storyTitle" rows={3}/>
+        <Field label="Story text" field="storyText" rows={7}/>
+      </div>
+
+      <div className="editor-panel">
+        <h2>Show / Hide Sections</h2>
+        {[["showBenefits","Benefits"],["showStory","Our Story"],["showStats","Statistics"],["showTestimonials","Testimonials"]].map(([field,label])=>
+          <label className="editor-toggle" key={field}><span>{label}</span><input type="checkbox" checked={!!draft[field]} onChange={e=>update(field,e.target.checked)}/><i /></label>
+        )}
+      </div>
+    </div>
+
+    <div className="editor-preview" style={{"--editor-primary":draft.primaryColor,"--editor-accent":draft.accentColor,"--editor-heading":draft.fontFamily,"--editor-body":draft.bodyFont,"--editor-bg":draft.pageBackground}}>
+      <p>LIVE DESIGN PREVIEW</p>
+      <div className="mini-preview-hero">
+        <small>{draft.heroEyebrow}</small><h2>{draft.heroTitle}</h2><span>{draft.heroSubtitle}</span>
+      </div>
+      <div className="mini-preview-card">Heading Font: <b style={{fontFamily:draft.fontFamily}}>{draft.fontFamily}</b></div>
+    </div>
+  </section>;
 }
 
 function Overview({profile,go,setMsg}){
