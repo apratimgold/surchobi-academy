@@ -132,24 +132,32 @@ function Home({ cats, courses, setPage }) {
 
 function courseImageUrl(course) {
   const key = `${course?.name || ""} ${course?.category || ""}`.toLowerCase();
+  const pexels = (id) =>
+    `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1200`;
 
-  if (key.includes("dance")) return "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?auto=format&fit=crop&w=1200&q=85";
-  if (key.includes("drawing") || key.includes("sketch")) return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=85";
-  if (key.includes("drum")) return "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?auto=format&fit=crop&w=1200&q=85";
-  if (key.includes("guitar")) return "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=1200&q=85";
-  if (key.includes("photo") || key.includes("camera")) return "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=85";
-  if (key.includes("vocal") || key.includes("sing")) return "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=85";
-  if (key.includes("yoga")) return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1200&q=85";
+  if (key.includes("dance")) return pexels("11063345");
+  if (key.includes("drawing") || key.includes("sketch")) return pexels("10474365");
+  if (key.includes("drum")) return pexels("5650534");
+  if (key.includes("guitar")) return pexels("3931073");
+  if (key.includes("photo") || key.includes("camera")) return pexels("15612567");
+  if (key.includes("vocal") || key.includes("sing")) return pexels("5650697");
+  if (key.includes("yoga")) return pexels("3758035");
 
-  return "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=85";
+  return pexels("10474365");
 }
 
 function CourseImage({ course }) {
+  const [failed, setFailed] = useState(false);
+
   return (
-    <div
-      className="course-image"
-      style={{ backgroundImage: `url("${courseImageUrl(course)}")` }}
-    >
+    <div className="course-image">
+      {!failed && (
+        <img
+          src={courseImageUrl(course)}
+          alt={course.name || course.category || "Surchobi course"}
+          onError={() => setFailed(true)}
+        />
+      )}
       <div className="course-image-overlay" />
       <span>{course.category || "SURCHOBI"}</span>
     </div>
