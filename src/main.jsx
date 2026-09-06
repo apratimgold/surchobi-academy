@@ -692,10 +692,295 @@ function Auth({
 
 
 
-function Dash({
-  profile,
-  t
-}) {
+function Dash({ profile, t }) {
+  const [data, setData] = useState(null);
+  const [pendingStudents, setPendingStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!profile) return;
+
+    async function loadDashboard() {
+
+      setLoading(true);
+
+      // ADMIN
+      if (profile.role === "admin") {
+
+        const { data: students, error } = await sb
+          .from("students")
+          .select(`
+            id,
+            student_code,
+            date_of_birth,
+            address,
+            status,
+            photo_url
+          `)
+          .eq("status", "pending");
+
+        if (!error) {
+          setPendingStudents(students || []);
+        }
+
+      }
+
+      // STUDENT
+      else if (profile.role === "student") {
+
+        const { data: student } = await sb
+          .from("students")
+          .select("*")
+          .eq("id", profile.id)
+          .single();
+
+        setData(student);
+
+      }
+
+      // TEACHER
+      else if (profile.role === "teacher") {
+
+        const { data: batches } = await sb
+          .from("batches")
+          .select("*")
+          .eq("teacher_id", profile.id);
+
+        setData(batches);
+
+      }
+
+      setLoading(false);
+    }
+
+    loadDashboard();
+
+  }, [profile]);
+
+
+  // APPROVE STUDENT
+  async function approveStudent(id) {
+
+    const { error } = await sb
+      .from("students")
+      .update({
+        status: "active"
+      })
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    // Remove approved student from the list immediately
+    setPendingStudents(
+      pendingStudents.filter(student => student.id !== id)
+    );
+
+    alert("Student approved successfully!");
+  }
+
+
+  if (!profile) {
+    return (
+      <section className="page">
+        Loading...
+      </section>
+    );
+  }
+
+
+  return (
+
+    <section className="dash">
+
+      <aside>
+
+        <h2>{profile.full_name}</h2>
+
+        <p>
+          {profile.role?.toUpperCase()}
+        </p>
+
+        <p>
+          Students · Teachers · Courses · Batches
+        </p>
+
+      </aside>
+
+
+      <article>
+
+        <h1>Dashboard</h1>
+
+
+        {/* ADMIN DASHBOARD */}
+
+        {profile.role === "admin" && (
+
+          <div>
+
+            <h2>Pending Student Approvals</h2>
+
+
+            {loading && (
+              <p>Loading students...</p>
+            )}
+
+
+            {!loading &&
+              pendingStudents.length === 0 && (
+
+              <p>
+                🎉 No students are waiting for approval.
+              </p>
+
+            )}
+
+
+            {pendingStudents.map(student => (
+
+              <div
+                className="student-row"
+                key={student.id}
+              >
+
+                <div>
+
+                  <h3>
+                    Student
+                  </h3>
+
+                  <p>
+                    Student Code:
+                    {" "}
+                    {student.student_code || "Not assigned"}
+                  </p>
+
+                  <p>
+                    Status:
+                    {" "}
+                    <b>{student.status}</b>
+                  </p>
+
+                  {student.date_of_birth && (
+
+                    <p>
+                      Date of Birth:
+                      {" "}
+                      {student.date_of_birth}
+                    </p>
+
+                  )}
+
+                  {student.address && (
+
+                    <p>
+                      Address:
+                      {" "}
+                      {student.address}
+                    </p>
+
+                  )}
+
+                </div>
+
+
+                <button
+                  className="gold"
+                  onClick={() =>
+                    approveStudent(student.id)
+                  }
+                >
+
+                  ✓ Approve
+
+                </button>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+
+        {/* STUDENT DASHBOARD */}
+
+        {profile.role === "student" && (
+
+          <div>
+
+            <h2>
+              Welcome, {profile.full_name}
+            </h2>
+
+
+            {data?.status === "pending" && (
+
+              <div className="notice">
+
+                {t.pending}
+
+              </div>
+
+            )}
+
+
+            {data?.status === "active" && (
+
+              <div className="notice">
+
+                🎉 Your account has been approved!
+
+              </div>
+
+            )}
+
+
+            <pre>
+              {JSON.stringify(
+                data,
+                null,
+                2
+              )}
+            </pre>
+
+          </div>
+
+        )}
+
+
+        {/* TEACHER DASHBOARD */}
+
+        {profile.role === "teacher" && (
+
+          <div>
+
+            <h2>
+              Teacher Dashboard
+            </h2>
+
+            <pre>
+              {JSON.stringify(
+                data,
+                null,
+                2
+              )}
+            </pre>
+
+          </div>
+
+        )}
+
+      </article>
+
+    </section>
+
+  );
+}{
 
 
   const [data, setData] =
