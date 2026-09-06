@@ -230,7 +230,7 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
 
     {settings.showStats && <section className="home-stats">
       <div><b>500+</b><span>Happy Students</span></div>
-      <div><b>25+</b><span>{t.courses}</span></div>
+      <div><b>25+</b><span>Courses</span></div>
       <div><b>30+</b><span>Expert Faculty</span></div>
       <i>Create<br/>Belong<br/>Grow</i>
     </section>}
@@ -461,7 +461,7 @@ function WebsiteEditor({ settings, onSave, setMsg }) {
       </div>
 
       <div className="editor-panel">
-        <h2>{t.story}</h2>
+        <h2>Our Story</h2>
         <Field label="Story heading (new line allowed)" field="storyTitle" rows={3}/>
         <Field label="Story text" field="storyText" rows={7}/>
       </div>
