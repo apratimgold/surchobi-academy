@@ -46,6 +46,8 @@ const DEFAULT_SITE_SETTINGS = {
   heroDanceImage: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=900&q=85",
   heroPhotoImage: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=85",
   heroArtImage: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=85",
+  heroYogaImage: "https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=900&q=85",
+  heroOthersImage: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=900&q=85",
   showBenefits: true,
   showStory: true,
   showStats: true,
@@ -170,11 +172,13 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
           <button className="watch-button" onClick={() => setPage("about")}><span className="play-dot">▷</span> Watch Our Story</button>
         </div>
       </div>
-      <div className="hero-collage" aria-label="Creative arts at Surchobi">
-        <div className="hero-tile hero-tile-music" style={{backgroundImage:`url("${settings.heroMusicImage}")`}}><span>Music</span></div>
-        <div className="hero-tile hero-tile-dance" style={{backgroundImage:`url("${settings.heroDanceImage}")`}}><span>Dance</span></div>
-        <div className="hero-tile hero-tile-photo" style={{backgroundImage:`url("${settings.heroPhotoImage}")`}}><span>Photography</span></div>
-        <div className="hero-tile hero-tile-art" style={{backgroundImage:`url("${settings.heroArtImage}")`}}><span>Visual Art</span></div>
+      <div className="hero-collage hero-collage-six" aria-label="Creative arts at Surchobi">
+        <HeroTile image={settings.heroMusicImage} icon="♫" title="MUSIC" subtitle="Find Your Sound" />
+        <HeroTile image={settings.heroDanceImage} icon="♧" title="DANCE" subtitle="Move. Express. Shine" />
+        <HeroTile image={settings.heroPhotoImage} icon="▣" title="PHOTOGRAPHY" subtitle="Capture Perspectives" />
+        <HeroTile image={settings.heroArtImage} icon="◉" title="DRAWING" subtitle="Imagine. Create. Colour." />
+        <HeroTile image={settings.heroYogaImage} icon="✿" title="YOGA" subtitle="Breathe. Balance. Grow." />
+        <HeroTile image={settings.heroOthersImage} icon="●●●" title="OTHERS" subtitle="Explore More" />
       </div>
     </section>
 
@@ -243,6 +247,17 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
         <article><div className="testimonial-avatar">M</div><p>“Dance at Surchobi is not just about steps, it's about expression. I love being a part of this place!”</p><b>Megha Roy</b><small>Dance Student</small></article>
       </div>
     </section>}
+  </div>;
+}
+
+function HeroTile({ image, icon, title, subtitle }) {
+  return <div className="hero-tile hero-tile-rich" style={{backgroundImage:`url("${image}")`}}>
+    <div className="hero-tile-shade" />
+    <div className="hero-tile-caption">
+      <strong className="hero-tile-icon">{icon}</strong>
+      <span>{title}</span>
+      <small>{subtitle}</small>
+    </div>
   </div>;
 }
 
@@ -590,7 +605,7 @@ function WebsiteEditor({ settings, onSave, setMsg }) {
         <h2>Images</h2>
         <p className="editor-help">Paste an image URL. The preview updates immediately.</p>
         <div className="image-editor-grid">
-          {[["Hero Music","heroMusicImage"],["Hero Dance","heroDanceImage"],["Hero Photography","heroPhotoImage"],["Hero Visual Art","heroArtImage"],["Our Story","storyImage"]].map(([label,field])=>
+          {[["Hero Music","heroMusicImage"],["Hero Dance","heroDanceImage"],["Hero Photography","heroPhotoImage"],["Hero Drawing","heroArtImage"],["Hero Yoga","heroYogaImage"],["Hero Others","heroOthersImage"],["Our Story","storyImage"]].map(([label,field])=>
             <div className="image-editor-card" key={field}>
               <div className="editor-image-preview" style={{backgroundImage:`url("${draft[field]}")`}} />
               <label><span>{label}</span><input value={draft[field] || ""} placeholder="https://..." onChange={e=>update(field,e.target.value)}/></label>
