@@ -307,9 +307,62 @@ function Simple({ title, text }) {
 }
 
 function CoursesPage({ courses }) {
-  return <section className="simple-page"><p className="section-label">EXPLORE</p><h1>Our Courses</h1><div className="course-grid full-grid">
-    {courses.map(c => <article className="course-card" key={c.id}><CourseImage course={c} /><div className="course-info"><h3>{c.name}</h3><p>{c.description}</p></div></article>)}
-  </div></section>;
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const order = ["Music","Dance","Drawing","Photography","Yoga","Others"];
+  const categories = [...new Set(courses.map(c => c.category).filter(Boolean))]
+    .sort((a,b) => {
+      const ai = order.indexOf(a), bi = order.indexOf(b);
+      return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+    });
+
+  const currentCourses = selectedCategory
+    ? courses.filter(c => c.category === selectedCategory)
+    : [];
+
+  if (selectedCourse) {
+    const course = selectedCourse;
+    return <section className="simple-page course-detail-page">
+      <button className="back-button" onClick={() => setSelectedCourse(null)}>← Back to {selectedCategory}</button>
+      <CourseImage course={course} />
+      <p className="section-label">{course.category || "COURSE"}</p>
+      <h1>{course.name}</h1>
+      <div className="course-detail-grid">
+        <div><h3>About this Course</h3><p>{course.description || "Course details will be updated soon."}</p></div>
+        <div><h3>Teacher</h3><p>Teacher information will be available from the academy.</p></div>
+        <div><h3>Class Timings</h3><p>Batch schedule will be announced by the academy.</p></div>
+      </div>
+      <button className="gold-button" onClick={() => setSelectedCourse(null)}>Explore More Courses →</button>
+    </section>;
+  }
+
+  if (selectedCategory) {
+    return <section className="simple-page">
+      <button className="back-button" onClick={() => setSelectedCategory(null)}>← All Categories</button>
+      <p className="section-label">EXPLORE</p>
+      <h1>{selectedCategory}</h1>
+      <div className="course-grid full-grid">
+        {currentCourses.map(c => <article className="course-card course-clickable" key={c.id} onClick={() => setSelectedCourse(c)}>
+          <CourseImage course={c} />
+          <div className="course-info"><h3>{c.name}</h3><p>{c.description || "View course details, teacher and timings."}</p><button>View Details →</button></div>
+        </article>)}
+      </div>
+      {!currentCourses.length && <p>No courses have been added to this category yet.</p>}
+    </section>;
+  }
+
+  return <section className="simple-page course-category-page">
+    <p className="section-label">EXPLORE</p><h1>Our Courses</h1>
+    <p>Select a creative field to explore its courses.</p>
+    <div className="course-category-grid">
+      {categories.map(name => <button className="course-category-card" key={name} onClick={() => setSelectedCategory(name)}>
+        <div className="category-icon"><CategoryIcon name={name} /></div>
+        <h3>{name}</h3>
+        <p>{courses.filter(c => c.category === name).length} course{courses.filter(c => c.category === name).length !== 1 ? "s" : ""}</p>
+        <span>Explore →</span>
+      </button>)}
+    </div>
+  </section>;
 }
 
 function Faculty() {
