@@ -134,7 +134,7 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
   const sorted = [...cats].sort((a,b) => (wanted.indexOf(a.name) < 0 ? 99 : wanted.indexOf(a.name)) - (wanted.indexOf(b.name) < 0 ? 99 : wanted.indexOf(b.name)));
   const shownCourses = courses.slice(0, 6);
 
-  return <>
+  return <div className="home-custom" style={{"--site-primary":settings.primaryColor,"--site-accent":settings.accentColor,"--site-bg":settings.pageBackground,"--site-heading-font":settings.fontFamily,"--site-body-font":settings.bodyFont}}>
     <section className="home-hero">
       <div className="hero-copy">
         <p className="hero-eyebrow">{settings.heroEyebrow}</p>
@@ -226,7 +226,7 @@ function Home({ cats, courses, setPage, settings = DEFAULT_SITE_SETTINGS }) {
         <article><div className="testimonial-avatar">M</div><p>“Dance at Surchobi is not just about steps, it's about expression. I love being a part of this place!”</p><b>Megha Roy</b><small>Dance Student</small></article>
       </div>
     </section>}
-  </>;
+  </div>;
 }
 
 function courseImageIndex(course) {
