@@ -132,18 +132,29 @@ function Home({ cats, courses, setPage }) {
 
 function courseImageUrl(course) {
   const key = `${course?.name || ""} ${course?.category || ""}`.toLowerCase();
-  const pexels = (id) =>
-    `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1200`;
 
-  if (key.includes("dance")) return pexels("11063345");
-  if (key.includes("drawing") || key.includes("sketch")) return pexels("10474365");
-  if (key.includes("drum")) return pexels("5650534");
-  if (key.includes("guitar")) return pexels("3931073");
-  if (key.includes("photo") || key.includes("camera")) return pexels("15612567");
-  if (key.includes("vocal") || key.includes("sing")) return pexels("5650697");
-  if (key.includes("yoga")) return pexels("3758035");
+  if (key.includes("dance"))
+    return "https://images.unsplash.com/photo-1578619627285-e3a1d382f2bf?auto=format&fit=crop&w=1200&q=90";
 
-  return pexels("10474365");
+  if (key.includes("drawing") || key.includes("sketch"))
+    return "https://estaticos.animaeducacao.com.br/articles/6a7834a1-18f2-4e3c-bd02-5641f8731aa5.jpeg";
+
+  if (key.includes("drum"))
+    return "https://images.squarespace-cdn.com/content/v1/61fa51f6352f66748411680a/1117802f-3cfc-418a-a01b-b40685f37a84/Raf.jpeg";
+
+  if (key.includes("guitar"))
+    return "https://images.unsplash.com/flagged/photo-1567529233601-1bf91062d580?auto=format&fit=crop&w=1200&q=90";
+
+  if (key.includes("photo") || key.includes("camera"))
+    return "https://cdn.prod.website-files.com/65489618a9e91669c78068e2/65741d087d7f5fa4e94505ae_CV%20Fot%C3%B3grafo%20independiente%202.jpg";
+
+  if (key.includes("vocal") || key.includes("sing"))
+    return "https://ual-media-res.cloudinary.com/image/fetch/c_fill,f_auto,g_auto,w_1200,h_700/https://www.arts.ac.uk/__data/assets/image/0023/187151/Woman-Singing-Into-Microphone_web.jpg";
+
+  if (key.includes("yoga"))
+    return "https://images.unsplash.com/photo-1723406227992-e18cec6c7e90?auto=format&fit=crop&w=1200&q=90";
+
+  return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=90";
 }
 
 function CourseImage({ course }) {
@@ -155,6 +166,7 @@ function CourseImage({ course }) {
         <img
           src={courseImageUrl(course)}
           alt={course.name || course.category || "Surchobi course"}
+          referrerPolicy="no-referrer"
           onError={() => setFailed(true)}
         />
       )}
