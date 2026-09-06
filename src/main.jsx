@@ -11,11 +11,11 @@ const sb = createClient(
 
 const DEFAULT_SITE_SETTINGS = {
   heroEyebrow: "LEARN • CREATE • EXPRESS",
-  heroTitle: "Art Builds\na Kinder,\nBrighter World",
+  heroTitle: "Art Builds\\na Kinder,\\nBrighter World",
   heroSubtitle: "Music. Dance. Photography. Visual Art. And More.",
   heroText: "At Surchobi, we nurture creativity, discipline and self-expression through the arts. Discover your passion, learn from expert mentors, and be part of a vibrant community.",
   exploreText: "Explore Courses",
-  storyTitle: "Nurturing Creativity\nFor a Brighter Tomorrow",
+  storyTitle: "Nurturing Creativity\\nFor a Brighter Tomorrow",
   storyText: "Surchobi is a creative arts academy built on the belief that the arts make life richer, kinder and more meaningful. We provide a supportive space for learners of all ages to explore, grow and express themselves through music, movement and more.",
   storyImage: "",
   fontFamily: "Playfair Display",
