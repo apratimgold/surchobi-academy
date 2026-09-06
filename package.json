@@ -1,1 +1,18 @@
-{"name":"surchobi-academy","private":true,"version":"1.0.0","type":"module","scripts":{"dev":"vite","build":"vite","preview":"vite preview"},"dependencies":{"@supabase/supabase-js":"^2.57.4","@vitejs/plugin-react":"latest","vite":"latest","react":"latest","react-dom":"latest"}}
+{
+  "name": "surchobi-academy",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}
