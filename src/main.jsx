@@ -44,6 +44,7 @@ function getSiteSettings() {
 
 function App() {
   const [page, setPage] = useState("home");
+  const [lang, setLang] = useState("en");
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [cats, setCats] = useState([]);
@@ -108,9 +109,12 @@ function App() {
         {session && <button onClick={() => setPage("dash")}>Dashboard</button>}
       </nav>
       <div className="header-actions">
+        <button className="language-button" onClick={() => setLang(lang === "en" ? "bn" : "en")}>
+          {lang === "en" ? "বাংলা" : "English"}
+        </button>
         {session
-          ? <button className="login-button" onClick={logout}>Logout</button>
-          : <button className="login-button" onClick={() => setPage("login")}>Login / Sign Up</button>}
+          ? <button className="login-button" onClick={logout}>{lang === "en" ? "Logout" : "লগআউট"}</button>
+          : <button className="login-button" onClick={() => setPage("login")}>{lang === "en" ? "Login / Sign Up" : "লগইন / নিবন্ধন"}</button>}
       </div>
     </header>
 
