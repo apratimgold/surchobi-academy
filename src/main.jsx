@@ -4,7 +4,14 @@ const tx={en:{home:"Home",about:"About",courses:"Courses",login:"Login",register
 function App(){const[lang,setLang]=useState("en"),[page,setPage]=useState("home"),[session,setSession]=useState(null),[profile,setProfile]=useState(null),[cats,setCats]=useState([]),[courses,setCourses]=useState([]),[msg,setMsg]=useState("");let t=tx[lang];
 useEffect(()=>{sb.auth.getSession().then(({data})=>setSession(data.session));let{data:{subscription}}=sb.auth.onAuthStateChange((_,s)=>setSession(s));return()=>subscription.unsubscribe()},[]);
 useEffect(()=>{(async()=>{let[a,b]=await Promise.all([sb.from("categories").select("*").order("name"),sb.from("courses").select("*,categories(name)").order("name")]);setCats(a.data||[]);setCourses(b.data||[])})()},[]);
-useEffect(()=>{if(session)sb.from("profiles").select("*").eq("id",session.user.id).single().then(({data})=>setProfile(data)},[session]);
+useEffect(()=>{
+  if(session)
+    sb.from("profiles")
+      .select("*")
+      .eq("id",session.user.id)
+      .single()
+      .then(({data})=>setProfile(data));
+},[session]);
 const signout=async()=>{await sb.auth.signOut();setProfile(null);setPage("home")};
 return <><header><button className="brand" onClick={()=>setPage("home")}><b>সুরছবি</b><small>SURCHOBI ACADEMY</small></button><nav>{["home","about","courses"].map(x=><button onClick={()=>setPage(x)} key={x}>{t[x]}</button>)}{session?<><button onClick={()=>setPage("dash")}>Dashboard</button><button onClick={signout}>{t.logout}</button></>:<><button onClick={()=>setPage("login")}>{t.login}</button><button className="gold" onClick={()=>setPage("register")}>{t.register}</button></>}</nav><button className="lang" onClick={()=>setLang(lang==="en"?"bn":"en")}>{lang==="en"?"বাংলা":"English"}</button></header>
 {page==="home"&&<><section className="hero"><div><p className="eyebrow">CREATIVE ACADEMY · KOLKATA</p><h1>সুরছবি</h1><h2>SURCHOBI ACADEMY</h2><p>{t.welcome}</p><button className="gold big" onClick={()=>setPage("courses")}>{t.explore}</button></div><div className="art">♫<i>◉</i><em>✦</em></div></section><section className="section"><h2>{t.world}</h2><div className="cards">{cats.map((c,i)=><article className="card" key={c.id}><div className="icon">{["♫","◈","◉","✎","☾","✦"][i%6]}</div><h3>{c.name}</h3><p>{c.description}</p></article>)}</div></section></>}
