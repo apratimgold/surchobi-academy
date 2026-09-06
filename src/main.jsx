@@ -132,23 +132,27 @@ function Home({ cats, courses, setPage }) {
 
 function CategoryIcon({ name }) {
   const common = {
-    width: 32,
-    height: 32,
-    viewBox: "0 0 24 24",
+    viewBox: "0 0 64 64",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.8,
+    strokeWidth: 3.2,
     strokeLinecap: "round",
     strokeLinejoin: "round",
     "aria-hidden": true
   };
+  const key = (name || "").trim().toLowerCase();
 
-  if (name === "Music") return <svg {...common}><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>;
-  if (name === "Dance") return <svg {...common}><circle cx="13" cy="4" r="2"/><path d="M11 8l3 3 4 1"/><path d="M14 11l-2 5 3 4"/><path d="M12 12l-4 3-3-1"/><path d="M10 16l-4 4"/></svg>;
-  if (name === "Drawing") return <svg {...common}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>;
-  if (name === "Photography") return <svg {...common}><path d="M4 7h3l1.5-2h7L17 7h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>;
-  if (name === "Yoga") return <svg {...common}><path d="M12 4c-2 2-3 4-3 6 0 2 1 3 3 3s3-1 3-3c0-2-1-4-3-6z"/><path d="M6 14c1 4 3 6 6 6s5-2 6-6"/><path d="M5 17c2 0 3-1 4-3"/><path d="M19 17c-2 0-3-1-4-3"/></svg>;
-  return <svg {...common}><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5z"/></svg>;
+  if (key === "music") return <svg {...common}><path d="M23 48V17l25-6v31" /><circle cx="16" cy="48" r="7" /><circle cx="41" cy="42" r="7" /></svg>;
+
+  if (key === "dance") return <svg {...common}><circle cx="28" cy="10" r="4" /><path d="M27 15c-2 8 2 13 9 17l12 2" /><path d="M28 17c-3 7-1 14 4 20l8 12" /><path d="M24 22c-2 8-7 13-15 17" /><path d="M25 37l-5 16" /><path d="M32 36l15 4" /></svg>;
+
+  if (key === "drawing") return <svg {...common}><path d="M12 35c0-15 11-25 25-25 9 0 17 5 17 14 0 8-6 14-14 14h-5c-3 0-5 2-5 5 0 3-2 5-6 5-7 0-12-5-12-13Z" /><circle cx="25" cy="21" r="2.2" /><circle cx="35" cy="17" r="2.2" /><circle cx="45" cy="23" r="2.2" /><circle cx="21" cy="31" r="2.2" /><path d="M39 46 55 26l4 4-16 20-7 3Z" /><path d="m52 27 4 4" /></svg>;
+
+  if (key === "photography") return <svg {...common}><path d="M8 21h12l4-7h16l4 7h12a4 4 0 0 1 4 4v25a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V25a4 4 0 0 1 4-4Z" /><circle cx="32" cy="38" r="10" /></svg>;
+
+  if (key === "yoga") return <svg {...common}><path d="M32 55C18 55 9 47 7 37c9 0 15 4 20 10-5-8-7-17-4-28 7 4 11 11 12 20 1-9 5-16 12-20 3 11 1 20-4 28 5-6 11-10 20-10-2 10-11 18-25 18Z" /><path d="M32 55V39" /></svg>;
+
+  return <svg {...common}><path d="M22 9l3 12 12 3-12 3-3 12-3-12-12-3 12-3 3-12Z" /><path d="M48 29l2 8 8 2-8 2-2 8-2-8-8-2 8-2 2-8Z" /></svg>;
 }
 
 function Simple({ title, text }) {
