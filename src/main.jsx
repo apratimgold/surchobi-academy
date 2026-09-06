@@ -258,129 +258,168 @@ function Students({setMsg}){
 function Teachers({setMsg}){
   const [rows,setRows]=useState([]);
   const [profiles,setProfiles]=useState([]);
-  const [form,setForm]=useState({full_name:"",email:"",password:"",phone:"",specialization:"",bio:"",status:"active"});
+  const [form,setForm]=useState({profile_id:"",specialization:"",bio:"",status:"active"});
   const [saving,setSaving]=useState(false);
 
   async function load(){
-    const [t,p]=await Promise.all([
+    const [teacherResult,profileResult]=await Promise.all([
       sb.from("teachers").select("*").order("created_at",{ascending:false}),
-      sb.from("profiles").select("*").eq("role","teacher")
+      sb.from("profiles").select("*").order("full_name")
     ]);
-    if(t.error) console.log(t.error);
-    if(p.error) console.log(p.error);
-    setRows(t.data||[]);
-    setProfiles(p.data||[]);
+
+    if(teacherResult.error) setMsg(teacherResult.error.message);
+    if(profileResult.error) setMsg(profileResult.error.message);
+
+    setRows(teacherResult.data||[]);
+    setProfiles(profileResult.data||[]);
   }
 
   useEffect(()=>{load();},[]);
 
+  const teacherIds=rows.map(x=>x.id);
+
+  const availableProfiles=profiles.filter(
+    p=>p.role!=="teacher" && !teacherIds.includes(p.id)
+  );
+
   async function save(e){
     e.preventDefault();
-    if(!form.full_name.trim() || !form.email.trim() || !form.password) {
-      return setMsg("Name, email and password are required.");
-    }
-    if(form.password.length < 6) {
-      return setMsg("Password must be at least 6 characters.");
+
+    if(!form.profile_id){
+      return setMsg("Please select a registered user.");
     }
 
     setSaving(true);
 
-    // A separate Supabase client creates the teacher account without
-    // replacing the currently logged-in admin session.
-    const teacherAuth=createClient(
-      import.meta.env.VITE_SUPABASE_URL,
-      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}
-    );
-
-    const {data:authData,error:authError}=await teacherAuth.auth.signUp({
-      email:form.email.trim(),
-      password:form.password,
-      options:{data:{full_name:form.full_name.trim(),phone:form.phone.trim()}}
-    });
-
-    if(authError || !authData.user){
-      setSaving(false);
-      return setMsg(authError?.message||"Could not create teacher account.");
-    }
-
-    const id=authData.user.id;
-
-    const {error:profileError}=await sb.from("profiles").upsert({
-      id,
-      full_name:form.full_name.trim(),
-      phone:form.phone.trim()||null,
-      role:"teacher"
-    });
+    // 1. Promote the selected registered user to Teacher.
+    const {error:profileError}=await sb
+      .from("profiles")
+      .update({role:"teacher"})
+      .eq("id",form.profile_id);
 
     if(profileError){
       setSaving(false);
-      return setMsg(`Teacher account created, but profile failed: ${profileError.message}`);
+      return setMsg(`Could not update role: ${profileError.message}`);
     }
 
-    const {error:teacherError}=await sb.from("teachers").upsert({
-      id,
-      specialization:form.specialization.trim()||null,
-      bio:form.bio.trim()||null,
-      status:form.status
-    });
+    // 2. Create the teacher details record using the same UUID automatically.
+    const {error:teacherError}=await sb
+      .from("teachers")
+      .insert({
+        id:form.profile_id,
+        specialization:form.specialization.trim()||null,
+        bio:form.bio.trim()||null,
+        status:form.status
+      });
 
     if(teacherError){
+      // Roll back the role if the teacher record could not be created.
+      await sb.from("profiles").update({role:"student"}).eq("id",form.profile_id);
       setSaving(false);
-      return setMsg(`Teacher account created, but teacher record failed: ${teacherError.message}`);
+      return setMsg(`Could not create teacher: ${teacherError.message}`);
     }
 
     setSaving(false);
-    setMsg(authData.session
-      ? "Teacher added successfully!"
-      : "Teacher added! If email confirmation is enabled, they must verify their email before logging in.");
-    setForm({full_name:"",email:"",password:"",phone:"",specialization:"",bio:"",status:"active"});
+    setMsg("Teacher added successfully!");
+    setForm({profile_id:"",specialization:"",bio:"",status:"active"});
     load();
   }
 
   async function del(id,name){
-    if(!confirm(`Delete ${name||"this teacher"}'s teacher record?`)) return;
+    if(!confirm(`Remove ${name||"this teacher"} from Teachers?`)) return;
+
     const {error}=await sb.from("teachers").delete().eq("id",id);
+
     if(error) return setMsg(error.message);
-    setMsg("Teacher record deleted. The login account was not deleted.");
+
+    await sb.from("profiles").update({role:"student"}).eq("id",id);
+
+    setMsg("Teacher removed successfully.");
     load();
   }
 
   return <section className="manager-page">
-    <Header title="Teachers" text="Create teacher accounts and manage faculty details."/>
+    <Header
+      title="Teachers"
+      text="Promote registered users to teachers and manage faculty details."
+    />
 
     <form className="manager-form teacher-form" onSubmit={save}>
-      <input placeholder="Teacher full name" value={form.full_name} onChange={e=>setForm({...form,full_name:e.target.value})} required/>
-      <input type="email" placeholder="Teacher email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} required/>
-      <input type="password" placeholder="Temporary password (minimum 6 characters)" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} required/>
-      <input placeholder="Phone number" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/>
-      <input placeholder="Specialization (e.g. Classical Music)" value={form.specialization} onChange={e=>setForm({...form,specialization:e.target.value})}/>
-      <input placeholder="Short bio" value={form.bio} onChange={e=>setForm({...form,bio:e.target.value})}/>
-      <select value={form.status} onChange={e=>setForm({...form,status:e.target.value})}>
+
+      <select
+        value={form.profile_id}
+        onChange={e=>setForm({...form,profile_id:e.target.value})}
+        required
+      >
+        <option value="">Select a registered user</option>
+
+        {availableProfiles.map(p=>(
+          <option key={p.id} value={p.id}>
+            {p.full_name} {p.phone?`(${p.phone})`:""}
+          </option>
+        ))}
+
+      </select>
+
+      <input
+        placeholder="Specialization (e.g. Classical Music)"
+        value={form.specialization}
+        onChange={e=>setForm({...form,specialization:e.target.value})}
+      />
+
+      <input
+        placeholder="Short bio"
+        value={form.bio}
+        onChange={e=>setForm({...form,bio:e.target.value})}
+      />
+
+      <select
+        value={form.status}
+        onChange={e=>setForm({...form,status:e.target.value})}
+      >
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
+
       <button className="gold-button" disabled={saving}>
-        {saving?"Creating Teacher...":"+ Add Teacher"}
+        {saving?"Adding Teacher...":"+ Add Teacher"}
       </button>
+
     </form>
 
     <p className="manager-note">
-      This creates a teacher login account, a Profile with role = teacher, and a Teacher record automatically.
+      Select a registered user. The dashboard automatically changes the role to Teacher and creates the teacher record. No UUID or SQL is needed.
     </p>
 
+    {!availableProfiles.length && (
+      <p className="manager-note">
+        No available registered users found. The person must first create a normal account using Sign Up.
+      </p>
+    )}
+
     <List>
-      {rows.map(t=>{
-        const p=profiles.find(x=>x.id===t.id);
-        return <div className="management-row" key={t.id}>
+      {rows.map(teacher=>{
+        const p=profiles.find(x=>x.id===teacher.id);
+
+        return <div className="management-row" key={teacher.id}>
           <div>
             <b>{p?.full_name||"Teacher"}</b>
-            <small>{t.specialization||"No specialization"}{p?.phone?` • ${p.phone}`:""}{t.bio?` • ${t.bio}`:""}</small>
+
+            <small>
+              {teacher.specialization||"No specialization"}
+              {p?.phone?` • ${p.phone}`:""}
+              {teacher.bio?` • ${teacher.bio}`:""}
+            </small>
           </div>
-          <span>{t.status}</span>
-          <button onClick={()=>del(t.id,p?.full_name)}>Delete</button>
+
+          <span>{teacher.status}</span>
+
+          <button onClick={()=>del(teacher.id,p?.full_name)}>
+            Remove
+          </button>
         </div>;
       })}
+
       {!rows.length&&<p>No teachers added yet.</p>}
     </List>
   </section>;
