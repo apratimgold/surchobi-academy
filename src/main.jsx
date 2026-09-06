@@ -122,12 +122,38 @@ function Home({ cats, courses, setPage }) {
       <div className="section-heading"><div><p className="section-label">EXPLORE</p><h2>Our Courses</h2></div><button className="text-button" onClick={() => setPage("courses")}>View All Courses →</button></div>
       <div className="course-grid">
         {courses.slice(0,6).map(c => <article className="course-card" key={c.id}>
-          <div className="course-image"><span>{c.category || "SURCHOBI"}</span></div>
+          <CourseImage course={c} />
           <div className="course-info"><h3>{c.name}</h3><p>{c.description || "Discover your creativity"}</p></div>
         </article>)}
       </div>
     </section>
   </>;
+}
+
+function courseImageUrl(course) {
+  const key = `${course?.name || ""} ${course?.category || ""}`.toLowerCase();
+
+  if (key.includes("dance")) return "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?auto=format&fit=crop&w=1200&q=85";
+  if (key.includes("drawing") || key.includes("sketch")) return "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=85";
+  if (key.includes("drum")) return "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?auto=format&fit=crop&w=1200&q=85";
+  if (key.includes("guitar")) return "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=1200&q=85";
+  if (key.includes("photo") || key.includes("camera")) return "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=85";
+  if (key.includes("vocal") || key.includes("sing")) return "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=85";
+  if (key.includes("yoga")) return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1200&q=85";
+
+  return "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=85";
+}
+
+function CourseImage({ course }) {
+  return (
+    <div
+      className="course-image"
+      style={{ backgroundImage: `url("${courseImageUrl(course)}")` }}
+    >
+      <div className="course-image-overlay" />
+      <span>{course.category || "SURCHOBI"}</span>
+    </div>
+  );
 }
 
 function CategoryIcon({ name }) {
@@ -161,7 +187,7 @@ function Simple({ title, text }) {
 
 function CoursesPage({ courses }) {
   return <section className="simple-page"><p className="section-label">EXPLORE</p><h1>Our Courses</h1><div className="course-grid full-grid">
-    {courses.map(c => <article className="course-card" key={c.id}><div className="course-image"><span>{c.category}</span></div><div className="course-info"><h3>{c.name}</h3><p>{c.description}</p></div></article>)}
+    {courses.map(c => <article className="course-card" key={c.id}><CourseImage course={c} /><div className="course-info"><h3>{c.name}</h3><p>{c.description}</p></div></article>)}
   </div></section>;
 }
 
