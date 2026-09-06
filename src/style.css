@@ -512,76 +512,79 @@ CREAM
 ========================================= */
 
 .category-strip {
-
   display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit,
-    minmax(160px,1fr));
-
-  background: white;
-
-  border-bottom:
-    1px solid #e5dfd3;
-
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid #eee9e0;
+  border-bottom: 1px solid #e8e3da;
 }
-
 
 .category-item {
-
-  padding: 28px 18px;
-
+  min-height: 136px;
+  padding: 22px 14px 18px;
   text-align: center;
-
-  border-right:
-    1px solid #e5dfd3;
-
-  transition: .25s;
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #ddd8cf;
+  transition: background .2s ease;
 }
 
-
-.category-item:hover {
-
-  background: #f4f1e9;
-
-}
-
+.category-item:last-child { border-right: none; }
+.category-item:hover { background: #faf9f6; }
 
 .category-icon {
-
-  font-size: 30px;
-
-  color: #b78b47;
-
-  margin-bottom: 8px;
-
+  width: 58px;
+  height: 58px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #252525;
 }
 
+.category-icon svg {
+  width: 52px;
+  height: 52px;
+  display: block;
+}
 
 .category-item h3 {
-
-  font-size: 15px;
-
-  color: #0b3d3d;
-
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: #25333a;
 }
-
 
 .category-item p {
-
-  margin-top: 5px;
-
-  font-size: 12px;
-
-  color: #777;
-
+  margin-top: 8px;
+  max-width: 290px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #657078;
 }
 
+@media (max-width: 900px) {
+  .category-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .category-item:nth-child(3n) { border-right: none; }
+  .category-item:nth-child(-n+3) { border-bottom: 1px solid #ddd8cf; }
+}
+
+@media (max-width: 560px) {
+  .category-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .category-item { min-height: 150px; border-bottom: 1px solid #ddd8cf; }
+  .category-item:nth-child(3n) { border-right: 1px solid #ddd8cf; }
+  .category-item:nth-child(even) { border-right: none; }
+}
 
 /* =========================================
    SECTIONS
 ========================================= */
+
+
 
 .courses-section,
 .simple-page {
