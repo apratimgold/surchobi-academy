@@ -170,9 +170,23 @@ function App() {
       }
 
 
-      setCats(
-        categoriesResult.data || []
-      );
+      const categoryOrder = [
+  "Music",
+  "Dance",
+  "Drawing",
+  "Photography",
+  "Yoga",
+  "Others"
+];
+
+const sortedCategories =
+  (categoriesResult.data || []).sort(
+    (a, b) =>
+      categoryOrder.indexOf(a.name) -
+      categoryOrder.indexOf(b.name)
+  );
+
+setCats(sortedCategories);
 
 
       setCourses(
