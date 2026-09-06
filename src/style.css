@@ -714,20 +714,27 @@ CREAM
   height: 170px;
   position: relative;
   overflow: hidden;
-  background-color: #173f40;
-  background-size: cover;
-  background-position: center;
+  background: #173f40;
+}
+
+.course-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .35s ease;
+}
+
+.course-card:hover .course-image img {
+  transform: scale(1.06);
 }
 
 .course-image-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(5,24,25,.05), rgba(5,24,25,.38));
-  transition: opacity .25s ease;
-}
-
-.course-card:hover .course-image-overlay {
-  opacity: .72;
+  background: linear-gradient(180deg, rgba(5,24,25,.08), rgba(5,24,25,.25));
+  pointer-events: none;
 }
 
 .course-image span {
@@ -742,11 +749,8 @@ CREAM
   font-size: 11px;
   font-weight: 700;
   text-align: center;
-  text-shadow: 0 2px 12px rgba(0,0,0,.55);
-}
-
-.course-card:hover .course-image {
-  background-size: 108%;
+  text-shadow: 0 2px 12px rgba(0,0,0,.7);
+  white-space: nowrap;
 }
 
 /* =========================================
