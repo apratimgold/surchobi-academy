@@ -107,10 +107,24 @@ function Home({ cats, courses, setPage }) {
     </section>
 
     <section className="category-strip">
-      {sorted.map((c,i) => <div className="category-item" key={c.id}>
-        <div className="category-icon">{["♫","♬","✎","◉","☾","✦"][i % 6]}</div>
-        <h3>{c.name}</h3><p>{c.description || "Explore creativity"}</p>
-      </div>)}
+      {sorted.map((c) => {
+        const categoryIcons = {
+          Music: "♫",
+          Dance: "💃",
+          Drawing: "🎨",
+          Photography: "📷",
+          Yoga: "🧘",
+          Others: "✦"
+        };
+
+        return <div className="category-item" key={c.id}>
+          <div className="category-icon">
+            {categoryIcons[c.name] || "✦"}
+          </div>
+          <h3>{c.name}</h3>
+          <p>{c.description || "Explore creativity"}</p>
+        </div>;
+      })}
     </section>
 
     <section className="courses-section">
