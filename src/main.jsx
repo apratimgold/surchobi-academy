@@ -321,19 +321,11 @@ function CoursesPage({ courses }) {
     : [];
 
   if (selectedCourse) {
-    const course = selectedCourse;
-    return <section className="simple-page course-detail-page">
-      <button className="back-button" onClick={() => setSelectedCourse(null)}>← Back to {selectedCategory}</button>
-      <CourseImage course={course} />
-      <p className="section-label">{course.category || "COURSE"}</p>
-      <h1>{course.name}</h1>
-      <div className="course-detail-grid">
-        <div><h3>About this Course</h3><p>{course.description || "Course details will be updated soon."}</p></div>
-        <div><h3>Teacher</h3><p>Teacher information will be available from the academy.</p></div>
-        <div><h3>Class Timings</h3><p>Batch schedule will be announced by the academy.</p></div>
-      </div>
-      <button className="gold-button" onClick={() => setSelectedCourse(null)}>Explore More Courses →</button>
-    </section>;
+    return <CourseDetails
+      course={selectedCourse}
+      category={selectedCategory}
+      onBack={() => setSelectedCourse(null)}
+    />;
   }
 
   if (selectedCategory) {
@@ -362,6 +354,100 @@ function CoursesPage({ courses }) {
         <span>Explore →</span>
       </button>)}
     </div>
+  </section>;
+}
+
+function CourseDetails({ course, category, onBack }) {
+  const [batches, setBatches] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadCourseDetails() {
+      setLoading(true);
+
+      const { data: batchData, error: batchError } = await sb
+        .from("batches")
+        .select("*")
+        .eq("course_id", course.id);
+
+      if (batchError) console.log("Batch detail error:", batchError);
+
+      const batchRows = batchData || [];
+      setBatches(batchRows);
+
+      const teacherIds = [...new Set(batchRows.map(b => b.teacher_id).filter(Boolean))];
+
+      if (teacherIds.length) {
+        const [{ data: teacherRows, error: teacherError }, { data: profileRows, error: profileError }] = await Promise.all([
+          sb.from("teachers").select("*").in("id", teacherIds),
+          sb.from("profiles").select("id,full_name,phone").in("id", teacherIds)
+        ]);
+
+        if (teacherError) console.log("Teacher detail error:", teacherError);
+        if (profileError) console.log("Teacher profile error:", profileError);
+
+        const combined = (teacherRows || []).map(t => ({
+          ...t,
+          profile: (profileRows || []).find(p => p.id === t.id)
+        }));
+
+        setTeachers(combined);
+      } else {
+        setTeachers([]);
+      }
+
+      setLoading(false);
+    }
+
+    loadCourseDetails();
+  }, [course.id]);
+
+  return <section className="simple-page course-detail-page">
+    <button className="back-button" onClick={onBack}>← Back to {category}</button>
+
+    <CourseImage course={course} />
+
+    <p className="section-label">{course.category || "COURSE"}</p>
+    <h1>{course.name}</h1>
+
+    <div className="course-detail-grid">
+      <div>
+        <h3>About this Course</h3>
+        <p>{course.description || "Course details will be updated soon."}</p>
+      </div>
+
+      <div>
+        <h3>Teachers</h3>
+        {loading ? <p>Loading...</p> : teachers.length ? (
+          <div className="course-detail-list">
+            {teachers.map(t => (
+              <div key={t.id}>
+                <b>{t.profile?.full_name || "Teacher"}</b>
+                {t.specialization && <small>{t.specialization}</small>}
+                {t.bio && <p>{t.bio}</p>}
+              </div>
+            ))}
+          </div>
+        ) : <p>No teacher has been assigned yet.</p>}
+      </div>
+
+      <div>
+        <h3>Class Timings</h3>
+        {loading ? <p>Loading...</p> : batches.length ? (
+          <div className="course-detail-list">
+            {batches.map(b => (
+              <div key={b.id}>
+                <b>{b.name}</b>
+                <small>{b.schedule || "Schedule not announced yet"}</small>
+              </div>
+            ))}
+          </div>
+        ) : <p>No batch or timing has been added yet.</p>}
+      </div>
+    </div>
+
+    <button className="gold-button" onClick={onBack}>Explore More Courses →</button>
   </section>;
 }
 
