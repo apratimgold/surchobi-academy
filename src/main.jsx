@@ -107,24 +107,15 @@ function Home({ cats, courses, setPage }) {
     </section>
 
     <section className="category-strip">
-      {sorted.map((c) => {
-        const categoryIcons = {
-          Music: "♫",
-          Dance: "💃",
-          Drawing: "🎨",
-          Photography: "📷",
-          Yoga: "🧘",
-          Others: "✦"
-        };
-
-        return <div className="category-item" key={c.id}>
+      {sorted.map((c) => (
+        <div className="category-item" key={c.id}>
           <div className="category-icon">
-            {categoryIcons[c.name] || "✦"}
+            <CategoryIcon name={c.name} />
           </div>
           <h3>{c.name}</h3>
           <p>{c.description || "Explore creativity"}</p>
-        </div>;
-      })}
+        </div>
+      ))}
     </section>
 
     <section className="courses-section">
@@ -137,6 +128,27 @@ function Home({ cats, courses, setPage }) {
       </div>
     </section>
   </>;
+}
+
+function CategoryIcon({ name }) {
+  const common = {
+    width: 32,
+    height: 32,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true
+  };
+
+  if (name === "Music") return <svg {...common}><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>;
+  if (name === "Dance") return <svg {...common}><circle cx="13" cy="4" r="2"/><path d="M11 8l3 3 4 1"/><path d="M14 11l-2 5 3 4"/><path d="M12 12l-4 3-3-1"/><path d="M10 16l-4 4"/></svg>;
+  if (name === "Drawing") return <svg {...common}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg>;
+  if (name === "Photography") return <svg {...common}><path d="M4 7h3l1.5-2h7L17 7h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>;
+  if (name === "Yoga") return <svg {...common}><path d="M12 4c-2 2-3 4-3 6 0 2 1 3 3 3s3-1 3-3c0-2-1-4-3-6z"/><path d="M6 14c1 4 3 6 6 6s5-2 6-6"/><path d="M5 17c2 0 3-1 4-3"/><path d="M19 17c-2 0-3-1-4-3"/></svg>;
+  return <svg {...common}><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5z"/></svg>;
 }
 
 function Simple({ title, text }) {
