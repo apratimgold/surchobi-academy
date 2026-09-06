@@ -676,99 +676,89 @@ function Dash({ profile, t }) {
 
         {/* ADMIN DASHBOARD */}
 
-        {profile.role === "admin" && (
-          <div>
+        // ADMIN
+if (profile.role === "admin") {
 
-            <h2>
-              Pending Student Approvals
-            </h2>
+  console.log("ADMIN detected");
+  console.log("Loading pending students...");
 
-
-            {loading && (
-              <p>
-                Loading students...
-              </p>
-            )}
-
-
-            {!loading &&
-              pendingStudents.length === 0 && (
-                <p>
-                  🎉 No students are waiting for approval.
-                </p>
-              )}
+  const {
+    data: studentData,
+    error: studentError
+  } = await sb
+    .from("students")
+    .select("*")
+    .eq("status", "pending");
 
 
-            {pendingStudents.map((student) => (
-
-              <div
-                className="student-row"
-                key={student.id}
-              >
-
-                <div>
-
-                  <h3>
-                    {student.full_name}
-                  </h3>
+  console.log("Pending students:", studentData);
+  console.log("Students error:", studentError);
 
 
-                  {student.phone && (
-                    <p>
-                      Phone: {student.phone}
-                    </p>
-                  )}
+  if (studentError) {
+
+    console.error(
+      "STUDENTS TABLE ERROR:",
+      studentError
+    );
+
+    setLoading(false);
+    return;
+
+  }
 
 
-                  <p>
-                    Student Code:{" "}
-                    {student.student_code ||
-                      "Not assigned"}
-                  </p>
+  console.log("Loading profiles...");
 
 
-                  <p>
-                    Status:{" "}
-
-                    <b>
-                      {student.status}
-                    </b>
-                  </p>
-
-
-                  {student.date_of_birth && (
-                    <p>
-                      Date of Birth:{" "}
-                      {student.date_of_birth}
-                    </p>
-                  )}
+  const {
+    data: profileData,
+    error: profileError
+  } = await sb
+    .from("profiles")
+    .select("*");
 
 
-                  {student.address && (
-                    <p>
-                      Address:{" "}
-                      {student.address}
-                    </p>
-                  )}
-
-                </div>
+  console.log("Profiles:", profileData);
+  console.log("Profiles error:", profileError);
 
 
-                <button
-                  className="gold"
-                  onClick={() =>
-                    approveStudent(student.id)
-                  }
-                >
-                  ✓ Approve
-                </button>
+  const combinedStudents =
+    (studentData || []).map((student) => {
 
-              </div>
+      const studentProfile =
+        (profileData || []).find(
+          (p) => p.id === student.id
+        );
 
-            ))}
+      return {
 
-          </div>
-        )}
+        ...student,
+
+        full_name:
+          studentProfile?.full_name ||
+          "Unknown Student",
+
+        phone:
+          studentProfile?.phone ||
+          ""
+
+      };
+
+    });
+
+
+  console.log(
+    "Combined students:",
+    combinedStudents
+  );
+
+
+  setPendingStudents(
+    combinedStudents
+  );
+
+}
 
 
         {/* STUDENT DASHBOARD */}
