@@ -1,0 +1,1 @@
+Gallery image assets are managed through the Admin Website Editor.
