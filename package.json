@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --check scripts/smoke-test.mjs",
+    "ci": "npm run build && npm run test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
