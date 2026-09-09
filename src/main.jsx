@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
+import danceCourseImage from "./course-images/dance.js";
 import { createRoot } from "react-dom/client";
 import { createClient } from "@supabase/supabase-js";
 import "./style.css";
