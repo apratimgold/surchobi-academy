@@ -21,6 +21,7 @@ const en = {
   },
   about: { title:"Nurturing Creativity For A Brighter Tomorrow", text:"SURCHOBI is a creative arts academy where passion meets discipline." },
   courses: { allCourses:"All Courses" },
+  courseDetail: { notFound:"Course not found", back:"← Back to Courses", defaultDescription:"Explore creativity and build your skills with guidance from our mentors.", about:"About this course", infoUpdated:"Course information will be updated by the academy.", timing:"Class Timing", contactTiming:"Contact the academy for current batch timings.", details:"Course Details", category:"Category", creativeArts:"Creative Arts", contactFees:"Contact the academy for fees, age group and batch availability.", mentors:"MENTORS", learnFaculty:"Learn with our Faculty", facultyMember:"Faculty Member", facultySoon:"Faculty information will be added soon." },
   footer: {}
 };
 export default en;
