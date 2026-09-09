@@ -1,5 +1,5 @@
-import en from "./en";
-import bn from "./bn";
+import en from "./en.js";
+import bn from "./bn.js";
 
 const dictionaries = { en, bn };
 
