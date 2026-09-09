@@ -39,6 +39,5 @@ const en = {
   teaching: { label:"TEACHING", myBatches:"My Batches", course:"Course", timingTba:"Timing TBA", students:"students", noneAssigned:"No batches are assigned to you yet." },
   learning: { label:"MY LEARNING", myCourses:"My Courses", course:"Course", batch:"Batch", timingTba:"Timing TBA", notEnrolled:"You are not enrolled in a course yet.", recentAttendance:"RECENT ATTENDANCE", noticeBoard:"NOTICE BOARD" },
   dashboard: { overview:"Overview", myProfile:"My Profile", myLearning:"My Learning", myReview:"My Review", reviews:"Reviews", gallery:"Gallery", students:"Students", teachers:"Teachers", courses:"Courses", batches:"Batches", enrollments:"Enrollments", feeRecords:"Fee Records", myBatches:"My Batches", attendance:"Attendance", notices:"Notices", website:"Website", logout:"Log out", tagline:"Learn • Create • Express", welcomeBack:"Welcome back,", welcome:"Welcome,", ready:"Your Surchobi profile is ready.", yourProfile:"YOUR PROFILE", yourName:"Your Name", editProfile:"Edit Profile", there:"there", user:"User", artist:"Artist" },
-  footer: {}
 };
 export default en;
