@@ -24,3 +24,12 @@ if (!src.includes('const GALLERY_BUCKET="gallery"')) {
   process.exit(1);
 }
 console.log("Smoke test passed: core UI and Supabase integrations are present.");
+
+const en = fs.readFileSync("src/i18n/en.js", "utf8");
+const bn = fs.readFileSync("src/i18n/bn.js", "utf8");
+if (!en.includes("export default") || !bn.includes("export default")) { console.error("i18n translation exports are missing."); process.exit(1); }
+const i18nRequired = ["footer:", "reviews:", "gallery:", "websiteEditor:", "notices:", "fees:", "attendance:", "enrollment:", "management:"];
+const missingI18n = i18nRequired.filter(k => !en.includes(k) || !bn.includes(k));
+if (missingI18n.length) { console.error("Missing required i18n sections:", missingI18n.join(", ")); process.exit(1); }
+if (!src.includes("useTranslation")) { console.error("Translation hook is missing."); process.exit(1); }
+console.log("Smoke test passed: centralized English + Bengali i18n sections are present.");
