@@ -4,7 +4,10 @@ import { createTranslator } from "./index";
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => {\n    const saved = localStorage.getItem("surchobi_language");\n    return saved === "bn" ? "bn" : "en";\n  });
+  const [lang, setLang] = useState(() => {
+    const saved = localStorage.getItem("surchobi_language");
+    return saved === "bn" ? "bn" : "en";
+  });
 
   const value = useMemo(() => ({
     lang,
