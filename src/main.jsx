@@ -4,11 +4,6 @@ import { createClient } from "@supabase/supabase-js";
 import "./style.css";
 import { LanguageProvider, useTranslation } from "./i18n/LanguageProvider";
 
-mport React, { useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
-import { createClient } from "@supabase/supabase-js";
-import "./style.css";
-import { LanguageProvider, useTranslation } from "./i18n/LanguageProvider";
 
 const translations = {
   en: { home:"Home", about:"About", courses:"Courses", faculty:"Faculty", login:"Login / Sign Up", logout:"Logout", heroLabel:"LEARN • CREATE • EXPRESS", heroTitle:"Art Builds a Kinder, Brighter World", heroText:"Music, Dance, Photography, Visual Art and more.", explore:"Explore Courses", story:"Our Story" },
