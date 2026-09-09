@@ -39,6 +39,5 @@ const bn = {
   teaching: { label:"শিক্ষাদান", myBatches:"আমার ব্যাচসমূহ", course:"কোর্স", timingTba:"সময়সূচি পরে জানানো হবে", students:"জন শিক্ষার্থী", noneAssigned:"আপনার জন্য এখনও কোনো ব্যাচ নির্ধারিত হয়নি।" },
   learning: { label:"আমার শেখা", myCourses:"আমার কোর্সসমূহ", course:"কোর্স", batch:"ব্যাচ", timingTba:"সময়সূচি পরে জানানো হবে", notEnrolled:"আপনি এখনও কোনো কোর্সে ভর্তি হননি।", recentAttendance:"সাম্প্রতিক উপস্থিতি", noticeBoard:"নোটিশ বোর্ড" },
   dashboard: { overview:"সংক্ষিপ্ত বিবরণ", myProfile:"আমার প্রোফাইল", myLearning:"আমার শেখা", myReview:"আমার পর্যালোচনা", reviews:"পর্যালোচনা", gallery:"গ্যালারি", students:"শিক্ষার্থীরা", teachers:"শিক্ষকবৃন্দ", courses:"কোর্সসমূহ", batches:"ব্যাচসমূহ", enrollments:"ভর্তির তালিকা", feeRecords:"ফি রেকর্ড", myBatches:"আমার ব্যাচসমূহ", attendance:"উপস্থিতি", notices:"নোটিশ", website:"ওয়েবসাইট", logout:"লগআউট", tagline:"শিখুন • সৃষ্টি করুন • প্রকাশ করুন", welcomeBack:"ফিরে আসার জন্য স্বাগতম,", welcome:"স্বাগতম,", ready:"আপনার সুরছবি প্রোফাইল প্রস্তুত।", yourProfile:"আপনার প্রোফাইল", yourName:"আপনার নাম", editProfile:"প্রোফাইল সম্পাদনা করুন", there:"আপনি", user:"ব্যবহারকারী", artist:"শিল্পী" },
-  footer: {}
 };
 export default bn;
