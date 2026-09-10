@@ -1,7 +1,7 @@
 import React,{useEffect,useState}from "react";
-import { sb } from "./supabaseClient";
 
-export default function TeacherApplications({setMsg,onChanged}){
+
+export default function TeacherApplications({sb,setMsg,onChanged}){
   const [rows,setRows]=useState([]),[busy,setBusy]=useState("");
   const load=async()=>{
     const {data,error}=await sb.from("profiles").select("id,full_name,email,requested_role,status,created_at").eq("requested_role","teacher_pending").eq("status","pending").order("created_at",{ascending:false});
