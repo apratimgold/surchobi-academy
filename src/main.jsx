@@ -23,7 +23,7 @@ const DEFAULT_SITE_SETTINGS = {
   storyImage:"", fontFamily:"Playfair Display", bodyFont:"DM Sans", primaryColor:"#062f2f", accentColor:"#e3c27d", pageBackground:"#f4f1e9",
   heroMusicImage:"/hero-music.jpg?v=20260908", heroDanceImage:"/hero-dance.jpg", heroPhotoImage:"/hero-photography.webp?v=20260909", heroArtImage:"https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=85", heroYogaImage:"https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=900&q=85", heroOthersImage:"https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=900&q=85",
   showBenefits:true, showStory:true, showStats:true, showTestimonials:true
-};}
+};
 function getSiteSettings(){try{const saved=JSON.parse(localStorage.getItem("surchobi_site_settings")||"{}");const merged={...DEFAULT_SITE_SETTINGS,...saved};if(saved._heroMusicAssetVersion!==2){merged.heroMusicImage=DEFAULT_SITE_SETTINGS.heroMusicImage;merged._heroMusicAssetVersion=2;localStorage.setItem("surchobi_site_settings",JSON.stringify(merged))}return merged}catch{return DEFAULT_SITE_SETTINGS}}
 
 function App(){
